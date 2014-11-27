@@ -1,9 +1,7 @@
-*.dat
-*.hmap
-*.dep
-*.o
-*.dia
-*.d
-*.LinkFileList
-*.xcodeproj
-*.icns
+resources/
+build/
+.DS_Store
+.Trashes
+*.swp
+*.lock
+*~.nib
