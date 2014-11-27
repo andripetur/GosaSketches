@@ -1,0 +1,9 @@
+*.dat
+*.hmap
+*.dep
+*.o
+*.dia
+*.d
+*.LinkFileList
+*.xcodeproj
+*.icns
