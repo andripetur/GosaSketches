@@ -3,8 +3,10 @@
 #include "ofMain.h"
 #include "oscRecieverThread.h"
 #include "ofxKinect.h"
+#include "minimal.h"
 
-enum {KICK = 0, SNARE, HH, COW};
+enum {KICK = 0, SNARE, HH, COW}; // drum triggers
+enum {MINIMAL = 0, HUMANOID, ABSTRACT}; // current scene
 
 class ofApp : public ofBaseApp{
 
@@ -17,8 +19,6 @@ class ofApp : public ofBaseApp{
         void exit();
 
 		void keyPressed(int key);
-		void keyReleased(int key);
-		void mouseMoved(int x, int y );
 		void mousePressed(int x, int y, int button);
 		void windowResized(int w, int h);
     
@@ -33,7 +33,10 @@ class ofApp : public ofBaseApp{
     
         ofxKinect kinect;
         float kinectAngle;
-        float kinectAngleStart; 
+        float kinectAngleStart;
+    
+    // Minimal scene
+        Minimal minimal; 
     
     
 

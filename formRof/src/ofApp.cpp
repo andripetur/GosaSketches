@@ -3,7 +3,7 @@
 
 
 //--------------------------------------------------------------
-ofApp::ofApp() : oscThread(this) {
+ofApp::ofApp() : oscThread(this) , minimal(ofGetWidth(),ofGetHeight()) {
     
  
     
@@ -21,6 +21,7 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    
     // Update the kinect
     kinect.update();
 	
@@ -44,6 +45,7 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::setupKinect(){
+    
     // enable depth->video image calibration
     kinect.setRegistration(true);
     
@@ -60,6 +62,7 @@ void ofApp::setupKinect(){
 
 //--------------------------------------------------------------
 void ofApp::exit() {
+    
 	kinect.setCameraTiltAngle(kinectAngleStart);
 	kinect.close();
     
@@ -68,23 +71,24 @@ void ofApp::exit() {
 	
 }
 
-//--------------------------------------------------------------
-void ofApp::oscDrTriggerCallBack(int which){
+//----------------Osc_Callback_funtions--------------------------
+void ofApp::oscDrTriggerCallBack(int which) {
     
+    minimal.drumTriggers(which);
     
 }
 
-void ofApp::oscEnergyCallback(float dasEnergy){
-    
+void ofApp::oscEnergyCallback(float dasEnergy) {
     
 }
 
 void ofApp::oscBpmCallback(float dasBpm) {
-
+    
 }
 
-//--------------------------------------------------------------
+//----------------User_Input--------------------------------------
 void ofApp::keyPressed(int key){
+    
     switch (key) {
 
             // close - open kinect connection
@@ -111,16 +115,6 @@ void ofApp::keyPressed(int key){
 			kinect.setCameraTiltAngle(kinectAngle);
 			break;
 	}
-
-}
-
-//--------------------------------------------------------------
-void ofApp::keyReleased(int key){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseMoved(int x, int y ){
 
 }
 
