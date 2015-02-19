@@ -5,3 +5,8 @@ build/
 *.swp
 *.lock
 *~.nib
+*.xcodeproj
+*.plist
+*.xcconfig
+bin/
+*.xcuserstate

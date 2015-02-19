@@ -1,0 +1,6 @@
+ofxKinect
+ofxOsc
+ofxBlur
+ofxCameraFilter
+ofxColorPalette
+ofxPostProcessing
