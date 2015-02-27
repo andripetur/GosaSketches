@@ -11,7 +11,7 @@
 
 #include "ofMain.h"
 
-#define INIT_SIZE 20
+#define INIT_SIZE 100
 
 class Shape
 {
@@ -46,7 +46,7 @@ public:
 private:
     float size;
     float initSize;
-    float shrinker = 0.5;
+    float shrinker = 1;
     
     bool rotateOn = true;
     float theta = 0;

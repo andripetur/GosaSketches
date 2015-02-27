@@ -34,6 +34,8 @@ void Triangle::drawThreeDim()
         ofScale( getSize(), getSize(), getSize());
         ofColor(color);
         mesh.draw();
+        setColor(0);
+        mesh.drawWireframe();
     
     }
     ofPopMatrix();

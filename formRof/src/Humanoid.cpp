@@ -8,5 +8,23 @@
 
 #include "Humanoid.h"
 
-Humanoid::Humanoid() {}
+Humanoid::Humanoid(ofxKinect *nKinect, ofFbo* nFbo)
+{
+    dasKinect = nKinect;
+    dasFbo = nFbo;
+}
+
 Humanoid::~Humanoid() {}
+
+void Humanoid::update()
+{
+    
+}
+
+void Humanoid::draw()
+{
+    
+}
+
+
+

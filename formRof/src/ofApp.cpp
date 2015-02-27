@@ -1,7 +1,10 @@
 #include "ofApp.h"
 
 //--------------------------------------------------------------
-ofApp::ofApp() : oscThread(this) , minimal(ofGetWidth(),ofGetHeight()) {
+ofApp::ofApp() : oscThread(this) ,
+                 minimal(ofGetWidth(),ofGetHeight() ) ,
+                 humanoid(&kinect, minimal.getColorSourceFboPointer() ) ,
+                 abstract(&kinect, minimal.getColorSourceFboPointer() ) {
     
 }
 
@@ -49,6 +52,9 @@ void ofApp::draw(){
     ofClear(0, 0, 0);
     
     minimal.draw();
+    
+    ofSetColor(255, 255 ,255);
+    ofDrawBitmapString(ofToString(ofGetFrameRate()), ofPoint(20, ofGetHeight() - 20));
 
 }
 

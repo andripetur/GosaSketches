@@ -10,6 +10,7 @@
 
 Minimal::Minimal(int width, int height) {
     
+    //Allocate space for fbo
     colorSource.allocate(width, height);
     
     hringur.randomDirection();
@@ -17,13 +18,11 @@ Minimal::Minimal(int width, int height) {
     thrihorn.randomDirection();
     
     colorMatcher.setBaseColor(ofColor(255,100,200));
-    
     colorMatcher.generateComplementaryTriad();
     
     nrDrumHits = 0;
     colorSwitchTrigger = 5;
     
-//    joi.enable();
 }
 
 Minimal::~Minimal() {
@@ -54,17 +53,17 @@ void Minimal::drumTriggers(int which)
     {
         case KICK:
             
-            hringur.setSize(50);
+            hringur.setSize(growToSize);
             break;
             
         case SNARE:
             
-            kassi.setSize(50);
+            kassi.setSize(growToSize*2);
             break;
             
         case HH:
             
-            thrihorn.setSize(50);
+            thrihorn.setSize(growToSize);
             break;
             
         case PERC:

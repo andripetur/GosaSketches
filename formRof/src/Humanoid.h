@@ -10,18 +10,20 @@
 #define __formRof__Humanoid__
 
 #include "ofMain.h"
+#include "ofxKinect.h"
+#include "MeshFunctions.h"
 
-class Humanoid {
+class Humanoid : public MeshFunctions
+{
     
 public:
-    Humanoid();
+    Humanoid(ofxKinect *nKinect, ofFbo* nFbo);
     ~Humanoid();
     
-    void setup();
     void update();
     void draw();
     
 private:
-    ofMesh mesh;
+    
 };
 #endif /* defined(__formRof__Humanoid__) */

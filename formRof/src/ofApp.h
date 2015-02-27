@@ -4,6 +4,8 @@
 #include "oscRecieverThread.h"
 #include "ofxKinect.h"
 #include "minimal.h"
+#include "Humanoid.h"
+#include "Abstract.h"
 
 // drumTriggers
 enum {KICK = 0, SNARE, HH, PERC, COW};
@@ -37,7 +39,9 @@ class ofApp : public ofBaseApp{
         float kinectAngle;
         float kinectAngleStart;
     
-    // Minimal scene
+    // Scenes
         Minimal minimal;
+        Humanoid humanoid;
+        Abstract abstract;
 		
 };

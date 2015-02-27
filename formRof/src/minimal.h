@@ -22,10 +22,12 @@ public:
     Minimal(int width, int height);
     ~Minimal();
     
+    // Functions
     void update();
     void draw();
     void drumTriggers(int which);
     
+    // Sets and Gets
     ofFbo * getColorSourceFboPointer();
     void setReductionSpeed(float nSpeed);
     
@@ -33,14 +35,11 @@ private:
     ofxColorPalette colorMatcher;
     
     ofFbo colorSource;
-    
-    ofSpherePrimitive sphere;
-    ofBoxPrimitive box;
-    
     void fillFbo();
     
     unsigned int nrDrumHits;
-    unsigned int colorSwitchTrigger; 
+    unsigned int colorSwitchTrigger;
+    unsigned int growToSize = 200;
     
     float reductionSpeed;
     
@@ -48,7 +47,6 @@ private:
     Triangle thrihorn;
     Square kassi;
     
-    ofLight joi; 
     
     
 };

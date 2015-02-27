@@ -8,12 +8,13 @@
 
 #include "Abstract.h"
 
-Abstract::Abstract()
+Abstract::Abstract( ofxKinect *nKinect, ofFbo* nFbo )
 {
-    
+    dasKinect = nKinect;
+    dasFbo = nFbo; 
 }
 
 Abstract::~Abstract()
 {
-
+    
 }

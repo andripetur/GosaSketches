@@ -10,12 +10,13 @@
 #define __formRof__Abstract__
 
 #include "ofMain.h"
+#include "MeshFunctions.h"
 
-class Abstract
+class Abstract : public MeshFunctions
 {
     
 public:
-    Abstract();
+    Abstract( ofxKinect *nKinect, ofFbo* nFbo );
     ~Abstract();
     
 private:
