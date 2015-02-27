@@ -5,8 +5,10 @@
 #include "ofxKinect.h"
 #include "minimal.h"
 
-enum {KICK = 0, SNARE, HH, COW}; // drum triggers
-enum {MINIMAL = 0, HUMANOID, ABSTRACT}; // current scene
+// drumTriggers
+enum {KICK = 0, SNARE, HH, PERC, COW};
+// SceneNames
+enum {MINIMAL = 0, HUMANOID, ABSTRACT};
 
 class ofApp : public ofBaseApp{
 
@@ -36,9 +38,6 @@ class ofApp : public ofBaseApp{
         float kinectAngleStart;
     
     // Minimal scene
-        Minimal minimal; 
-    
-    
-
+        Minimal minimal;
 		
 };

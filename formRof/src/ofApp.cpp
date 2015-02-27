@@ -1,15 +1,10 @@
 #include "ofApp.h"
 
-
-
 //--------------------------------------------------------------
 ofApp::ofApp() : oscThread(this) , minimal(ofGetWidth(),ofGetHeight()) {
     
- 
-    
 }
 
-//--------------------------------------------------------------
 void ofApp::setup(){
     
     ofSetFrameRate(60);
@@ -17,6 +12,17 @@ void ofApp::setup(){
     
     oscThread.startThread(true);
 
+}
+
+//--------------------------------------------------------------
+void ofApp::exit() {
+    
+	kinect.setCameraTiltAngle(kinectAngleStart);
+	kinect.close();
+        
+    //Receiver thread
+    oscThread.waitForThread();
+	
 }
 
 //--------------------------------------------------------------
@@ -33,13 +39,16 @@ void ofApp::update(){
     
     //Set fps as window title.
     ofSetWindowTitle(ofToString(ofGetFrameRate()));
-
+    
+    minimal.update(); 
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    ofClear(ofRandom(255), ofRandom(255), ofRandom(255));
+    ofClear(0, 0, 0);
+    
+    minimal.draw();
 
 }
 
@@ -58,17 +67,6 @@ void ofApp::setupKinect(){
     kinectAngle = kinectAngleStart;
 	kinect.setCameraTiltAngle(kinectAngle);
     
-}
-
-//--------------------------------------------------------------
-void ofApp::exit() {
-    
-	kinect.setCameraTiltAngle(kinectAngleStart);
-	kinect.close();
-    
-    //Receiver thread
-    oscThread.stopThread();
-	
 }
 
 //----------------Osc_Callback_funtions--------------------------
@@ -114,6 +112,12 @@ void ofApp::keyPressed(int key){
 			if(kinectAngle<-30) kinectAngle=-30;
 			kinect.setCameraTiltAngle(kinectAngle);
 			break;
+            
+            //FakeDrumHit
+        case 'd':
+        case 'D':
+            minimal.drumTriggers(9);
+            break;
 	}
 
 }

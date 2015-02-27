@@ -5,12 +5,16 @@
 //  Created by Andri Pétur Þrastarson on 19/02/15.
 //
 //
+
 #include "ofApp.h"
 
 #ifndef __formRof__minimal__
 #define __formRof__minimal__
 
 #include "ofxColorPalette.h"
+#include "circle.h"
+#include "Triangle.h"
+#include "Square.h"
 
 class Minimal {
 
@@ -27,6 +31,7 @@ public:
     
 private:
     ofxColorPalette colorMatcher;
+    
     ofFbo colorSource;
     
     ofSpherePrimitive sphere;
@@ -34,7 +39,16 @@ private:
     
     void fillFbo();
     
+    unsigned int nrDrumHits;
+    unsigned int colorSwitchTrigger; 
+    
     float reductionSpeed;
+    
+    Circle hringur;
+    Triangle thrihorn;
+    Square kassi;
+    
+    ofLight joi; 
     
     
 };

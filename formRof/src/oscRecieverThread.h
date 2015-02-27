@@ -27,6 +27,7 @@ private:
     
     ofxOscReceiver receiver;
     ofxOscMessage m;
+    
     string messageAdress;
 };
 
