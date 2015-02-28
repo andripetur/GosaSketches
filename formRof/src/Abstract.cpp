@@ -18,3 +18,9 @@ Abstract::~Abstract()
 {
     
 }
+
+void Abstract::draw()
+{}
+
+void Abstract::update()
+{}

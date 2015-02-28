@@ -19,6 +19,9 @@ public:
     Abstract( ofxKinect *nKinect, ofFbo* nFbo );
     ~Abstract();
     
+    void draw();
+    void update();
+    
 private:
     
 };

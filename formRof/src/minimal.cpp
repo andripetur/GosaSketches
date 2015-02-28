@@ -33,6 +33,8 @@ void Minimal::fillFbo()
     
     colorSource.begin();
     {
+        ofBackground(255, 255, 255);
+        
         hringur.drawTwoDim();
         kassi.drawTwoDim();
         thrihorn.drawTwoDim();

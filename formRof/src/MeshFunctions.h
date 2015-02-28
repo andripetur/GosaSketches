@@ -17,10 +17,8 @@ class MeshFunctions
 public: 
     MeshFunctions();
     
-    ofMesh kinectToMesh(ofxKinect * kinect, int step);
-    void colorMesh(ofMesh * mesh, ofFbo * fbo);
-    
     void kinectToMesh(int step);
+    void colorMesh();
     
     void setKinectPointer();
     void setFboPointer();
@@ -28,6 +26,21 @@ public:
     ofMesh mesh;
     ofxKinect *dasKinect;
     ofFbo * dasFbo;
+    
+    ofPixels colorSource;
+    
+    //Fill functions
+    void fillGrid();
+    void fillLines();
+    
+    // Connect Functions
+    void connectGrid();
+    void connectLines(bool vs1or2); // dancinLines
+    
+    //DrawFunctions
+    void drawPoints(); // plainPoints
+    void drawGrid(); // KinectXxxxx
+    void drawBoxes(); // kinectBoxes
     
 };
 #endif /* defined(__formRof__MeshFunctions__) */

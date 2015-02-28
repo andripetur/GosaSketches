@@ -25,6 +25,8 @@ public:
     // Functions
     void update();
     void draw();
+    void fillFbo();
+    
     void drumTriggers(int which);
     
     // Sets and Gets
@@ -35,7 +37,6 @@ private:
     ofxColorPalette colorMatcher;
     
     ofFbo colorSource;
-    void fillFbo();
     
     unsigned int nrDrumHits;
     unsigned int colorSwitchTrigger;

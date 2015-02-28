@@ -12,9 +12,11 @@ enum {KICK = 0, SNARE, HH, PERC, COW};
 // SceneNames
 enum {MINIMAL = 0, HUMANOID, ABSTRACT};
 
-class ofApp : public ofBaseApp{
-
+class ofApp : public ofBaseApp
+{
 	public:
+    
+    // OpenFrameWorks Shiznit:
         ofApp();
 
 		void setup();
@@ -43,5 +45,10 @@ class ofApp : public ofBaseApp{
         Minimal minimal;
         Humanoid humanoid;
         Abstract abstract;
+    
+        int currentScene;
+    
+    // Cam stuff
+        ofEasyCam cam; 
 		
 };

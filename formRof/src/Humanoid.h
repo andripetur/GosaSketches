@@ -13,6 +13,8 @@
 #include "ofxKinect.h"
 #include "MeshFunctions.h"
 
+enum PresetNames {PLAIN_POINTS = 0, GRID, LINES_ONE, LINES_TWO, BOXES, BOXES_TWO, NUMBER_OF_PRESETS};
+
 class Humanoid : public MeshFunctions
 {
     
@@ -23,7 +25,10 @@ public:
     void update();
     void draw();
     
-private:
+    void setPreset(int nPreset);
+    int getCurrentPreset();
     
+private:
+    int preset;
 };
 #endif /* defined(__formRof__Humanoid__) */
