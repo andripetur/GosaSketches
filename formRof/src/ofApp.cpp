@@ -189,11 +189,20 @@ void ofApp::keyPressed(int key)
             
             //Scroll Through Presets
         case OF_KEY_LEFT:
-            humanoid.setPreset( humanoid.getCurrentPreset() - 1 );
+            if ( currentScene == HUMANOID ) {
+                humanoid.setPreset( humanoid.getCurrentPreset() - 1 );
+            } else if ( currentScene == ABSTRACT) {
+                abstract.setPreset( abstract.getCurrentPreset() - 1 );
+            }
+            
             break;
             
         case OF_KEY_RIGHT:
-            humanoid.setPreset( humanoid.getCurrentPreset() + 1 );
+            if ( currentScene == HUMANOID ) {
+                humanoid.setPreset( humanoid.getCurrentPreset() + 1 );
+            } else if ( currentScene == ABSTRACT) {
+                abstract.setPreset( abstract.getCurrentPreset() + 1 );
+            }
             break;
             
         } // switch

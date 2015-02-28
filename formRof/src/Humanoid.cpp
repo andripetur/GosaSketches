@@ -14,7 +14,8 @@ Humanoid::Humanoid(ofxKinect *nKinect, ofFbo* nFbo)
     dasFbo = nFbo;
     
     colorSource.allocate(dasFbo->getWidth(), dasFbo->getHeight(), OF_IMAGE_COLOR);
-        
+    fillLookUpTables();
+    
 }
 
 Humanoid::~Humanoid()
@@ -24,15 +25,10 @@ Humanoid::~Humanoid()
 
 void Humanoid::setPreset(int nPreset)
 {
-    if (nPreset >= 0 && nPreset < NUMBER_OF_PRESETS)
+    if (nPreset >= 0 && nPreset < HUMANOID_NR_OF_PRES)
     {
-        preset = nPreset;
+        MeshFunctions::setPreset( nPreset );
     }
-}
-
-int Humanoid::getCurrentPreset()
-{
-    return preset;
 }
 
 void Humanoid::update()
@@ -40,7 +36,7 @@ void Humanoid::update()
     mesh.clear();
     dasFbo->readToPixels(colorSource);
     
-    switch ( preset )
+    switch ( getCurrentPreset() )
     {
         case PLAIN_POINTS:
             kinectToMesh(5);
@@ -73,7 +69,7 @@ void Humanoid::update()
 
 void Humanoid::draw()
 {
-    switch ( preset )
+    switch ( getCurrentPreset() )
     {
         case PLAIN_POINTS:
             drawPoints();
