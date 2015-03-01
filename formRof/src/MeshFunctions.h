@@ -37,31 +37,38 @@ public:
     void fillGrid();
     void fillLines();
     void fillAbstractGrid(bool bWhichMethod);
-    void fillAbstractForm();
+    void fillAbstractForm(bool bSphereOrCone);
+    void fillHumanDistortion();
     
     // Connect Functions
     void connectGrid();
     void connectLines(bool vs1or2); // dancinLines
     void connectAbstractGrid(bool bWhichMethod);
     void connectAbstractGridTriangles();
+    void connectHumanDistortion();
     
     //DrawFunctions
     void drawPoints(); // plainPoints
     void drawGrid(); // KinectXxxxx
+    void drawLines();
     void drawBoxes(); // kinectBoxes
     void drawTriangles(); // kinectAbsttract verður betra með litum.
     void drawBlobs(); // spherMorphblob
+    void drawHumanDistortion(bool bPointsOrLines);
+    void drawGrowingHumanoid(bool bPointsOrLines);
     
     void flipKinectDrawing();
     
-    int getCurrentPreset();
-    void virtual setPreset(int nPreset);
+    unsigned int getCurrentPreset();
+    void virtual setPreset(unsigned int nPreset);
     
     void initSphere();
+    void initCone(); // resolution of form is a big influence on looks
     
 private:
-    int preset;
+    unsigned int preset;
     ofSpherePrimitive sphere;
+    ofConePrimitive cone;
     
 };
 #endif /* defined(__formRof__MeshFunctions__) */

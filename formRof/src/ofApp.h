@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "oscRecieverThread.h"
 #include "ofxKinect.h"
+#include "ofxPostProcessing.h"
 #include "minimal.h"
 #include "Humanoid.h"
 #include "Abstract.h"
@@ -49,6 +50,10 @@ class ofApp : public ofBaseApp
         int currentScene;
     
     // Cam stuff
-        ofEasyCam cam; 
+        ofEasyCam cam;
+    
+    // After effects.
+        ofxPostProcessing post;
+        ofLight light; 
 		
 };

@@ -17,6 +17,7 @@ Abstract::Abstract( ofxKinect *nKinect, ofFbo* nFbo )
     fillLookUpTables();
     
     initSphere();
+    initCone(); 
 }
 
 Abstract::~Abstract()
@@ -50,17 +51,35 @@ void Abstract::update()
             
         case SPHERE_MORPH_DOTS:
         case SPHERE_MORPH_BLOBS:
-            fillAbstractForm();
-            break;
-        
-        case SPHERE_MORPH_TRI_STRIPS:
-            fillAbstractForm();
-            connectAbstractGridTriangles();
+            fillAbstractForm(true);
             break;
             
         case SPHERE_MORPH_LINE_STRIPS:
             mesh.setMode(OF_PRIMITIVE_LINE_LOOP);
-            fillAbstractForm();
+            fillAbstractForm(true);
+            mesh.setupIndicesAuto();
+            break;
+        
+        case CONE_MORPH_DOTS:
+        case CONE_MORPH_BLOBS:
+            fillAbstractForm(false);
+            break;
+            
+        case CONE_MORPH_LINE_STRIPS:
+            mesh.setMode(OF_PRIMITIVE_LINE_LOOP);
+            fillAbstractForm(false);
+            mesh.setupIndicesAuto();
+            break;
+            
+        case HUMAN_DISTORTION_DOTS:
+        case HUMAN_DISTORTION_LINES:
+            fillHumanDistortion();
+            connectHumanDistortion();
+            break;
+        
+        case HUMAN_DISTORTION_AU_DOTS:
+        case HUMAN_DISTORTION_AU_LINES:
+            fillHumanDistortion();
             mesh.setupIndicesAuto();
             break;
         
@@ -84,13 +103,25 @@ void Abstract::draw()
             break;
             
         case SPHERE_MORPH_DOTS:
+        case CONE_MORPH_DOTS:
             drawPoints();
             break;
         
         case SPHERE_MORPH_BLOBS:
-        case SPHERE_MORPH_TRI_STRIPS:
+        case CONE_MORPH_BLOBS:
         case SPHERE_MORPH_LINE_STRIPS:
+        case CONE_MORPH_LINE_STRIPS:
             drawBlobs();
+            break;
+            
+        case HUMAN_DISTORTION_DOTS:
+        case HUMAN_DISTORTION_AU_DOTS:
+            drawHumanDistortion(true);
+            break;
+            
+        case HUMAN_DISTORTION_LINES:
+        case HUMAN_DISTORTION_AU_LINES:
+            drawHumanDistortion(false);
             break;
             
             

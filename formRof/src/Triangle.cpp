@@ -18,7 +18,21 @@ Triangle::Triangle()
 
 void Triangle::drawTwoDim()
 {
+    ofFill();
     ofSetColor(getColor());
+    
+    ofPushMatrix();
+    {
+        ofTranslate(getLocation().x, getLocation().y);
+        ofScale(getSize(),getSize());
+        
+        ofBeginShape();
+            ofVertex(0,0);
+            ofVertex(0,(2*sqrt(2))/3);
+            ofVertex(-sqrt(6)/3,-sqrt(2)/3);
+        ofEndShape();
+    }
+    ofPopMatrix();
     
 }
 
@@ -32,10 +46,9 @@ void Triangle::drawThreeDim()
         ofRotateX(getTheta());
         
         ofScale( getSize(), getSize(), getSize());
-        ofColor(color);
         mesh.draw();
-        setColor(0);
-        mesh.drawWireframe();
+//        ofSetColor(0);
+//        mesh.drawFaces();
     
     }
     ofPopMatrix();
@@ -52,3 +65,4 @@ void Triangle::fillMesh()
     mesh.addVertex(ofVec3f(sqrt(6),-sqrt(2),-1)/3);
     mesh.addVertex(ofVec3f(0,0,1));
 }
+

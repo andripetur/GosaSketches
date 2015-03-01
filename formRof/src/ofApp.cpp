@@ -7,7 +7,9 @@ ofApp::ofApp() : oscThread(this) ,
 }
 
 void ofApp::setup()
-{    
+{
+    ofBackground(0);
+    
     ofSetFrameRate(60);
     setupKinect();
     
@@ -17,7 +19,23 @@ void ofApp::setup()
     currentScene = MINIMAL;
     
     cam.enableMouseInput();
-
+    
+    // initalize postProcessing
+    ofSetCoordHandedness(OF_RIGHT_HANDED);
+    
+    // Setup light
+	light.setPosition(1000, 1000, 2000);
+    light.enable();
+    
+    post.init(ofGetWidth(), ofGetHeight());
+    post.setFlip(true);
+//    post.createPass<KaleidoscopePass>()->setEnabled(true);
+//    post.createPass<GodRaysPass>()->setEnabled(true);
+//    post.createPass<BloomPass>()->setEnabled(true);
+//    post.createPass<ConvolutionPass>()->setEnabled(true);
+//    post.createPass<NoiseWarpPass>()->setEnabled(true);
+//    post.createPass<VerticalTiltShifPass>()->setEnabled(true);
+//    post.createPass<PixelatePass>()->setEnabled(true);
 }
 
 //--------------------------------------------------------------
@@ -49,6 +67,7 @@ void ofApp::update()
             break;
             
         case ABSTRACT:
+            
             if(kinect.isFrameNew())
             {
                 minimal.fillFbo();
@@ -56,19 +75,14 @@ void ofApp::update()
             }
             break;
     }
-
-	// If there is a new frame and we are connected
-	if(kinect.isFrameNew())
-    {
-        //do Magic; 
-    }
     
     //Set fps as window title, if of is not fullscreen. 
     if ( ofGetWindowMode() != OF_FULLSCREEN ) {
         ofSetWindowTitle(ofToString(ofGetFrameRate()));
     }
     
-    minimal.update(); 
+    minimal.update();
+    
 }
 
 //--------------------------------------------------------------
@@ -76,10 +90,22 @@ void ofApp::draw(){
     
     ofClear(0, 0, 0);
     
-    cam.begin();
+ 
+    
+    // copy enable part of gl state
+    glPushAttrib(GL_ENABLE_BIT);
+    
+    // setup gl state
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    
+//    cam.begin();
+    post.begin(cam);
     
     switch ( currentScene )
     {
+        ofBackground(0);
+            
         case MINIMAL:
             minimal.draw();
             break;
@@ -93,14 +119,19 @@ void ofApp::draw(){
             break;
     }
     
-    cam.end();
+    post.end();
+//    cam.end();
+    
+    // set gl state back to original
+    glPopAttrib();
+    
     
     // If of is fullscreen draw framerate in bottom left corner.
     if ( ofGetWindowMode() == OF_FULLSCREEN) {
         ofSetColor(255, 255 ,255);
         ofDrawBitmapString(ofToString(ofGetFrameRate()), ofPoint(20, ofGetHeight() - 20));
     }
-
+    
 }
 
 //--------------------------------------------------------------
@@ -189,18 +220,24 @@ void ofApp::keyPressed(int key)
             
             //Scroll Through Presets
         case OF_KEY_LEFT:
-            if ( currentScene == HUMANOID ) {
+            if ( currentScene == HUMANOID )
+            {
                 humanoid.setPreset( humanoid.getCurrentPreset() - 1 );
-            } else if ( currentScene == ABSTRACT) {
+            }
+            else if ( currentScene == ABSTRACT)
+            {
                 abstract.setPreset( abstract.getCurrentPreset() - 1 );
             }
             
             break;
             
         case OF_KEY_RIGHT:
-            if ( currentScene == HUMANOID ) {
+            if ( currentScene == HUMANOID )
+            {
                 humanoid.setPreset( humanoid.getCurrentPreset() + 1 );
-            } else if ( currentScene == ABSTRACT) {
+            }
+            else if ( currentScene == ABSTRACT)
+            {
                 abstract.setPreset( abstract.getCurrentPreset() + 1 );
             }
             break;

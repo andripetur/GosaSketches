@@ -42,6 +42,11 @@ void Humanoid::update()
             kinectToMesh(5);
             break;
             
+        case GROW_POINTS:
+        case GROW_LINES:
+            fillLines();
+            break;
+            
         case GRID:
         case BOXES_TWO:
             fillGrid();
@@ -76,23 +81,30 @@ void Humanoid::draw()
             break;
         
         case GRID:
+            drawGrid();
+            break;
+            
         case LINES_ONE:
         case LINES_TWO:
-            
-            drawGrid();
+            drawLines();
             break;
             
         case BOXES:
         case BOXES_TWO:
             drawBoxes();
             break;
+        
+        case GROW_POINTS:
+            drawGrowingHumanoid(true);
+            break;
+            
+        case GROW_LINES:
+            drawGrowingHumanoid(false);
+            break;
+            
             
         
     }
     
 }
-
-
-
-
 

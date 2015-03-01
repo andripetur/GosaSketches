@@ -99,7 +99,7 @@ void MeshFunctions::fillAbstractGrid(bool bWhichMethod)
     }
 }
 
-void MeshFunctions::fillAbstractForm()
+void MeshFunctions::fillAbstractForm(bool bSphereOrCone)
 {
     int step = 5;
     float curDist;
@@ -119,10 +119,14 @@ void MeshFunctions::fillAbstractForm()
         }
     }
     
-    mesh = sphere.getMesh();
-    int numberOfVertices = mesh.getNumVertices();
+    // Select sphere or cone
+    if ( bSphereOrCone )  {
+        mesh = sphere.getMesh();
+    }   else {
+        mesh = cone.getMesh();
+    }
     
-    sphere.set(dasKinect->getWidth()*0.25, 30);
+    int numberOfVertices = mesh.getNumVertices();
     
     //Add the two meshesh together
     for ( int i = 0; i < numberOfVertices; i++)
@@ -130,6 +134,49 @@ void MeshFunctions::fillAbstractForm()
 //        mesh.addColor(mesh2.getColor(i));
         mesh.setVertex(i,  mesh.getVertex(i) + mesh2.getVertex(i) );
     }
+}
+
+void MeshFunctions::fillHumanDistortion()
+{
+    int step = 13;
+    ofVec3f currentVec;
+    float curDist;
+
+    
+    // Go through depth image, add vertexes
+    for(int y = 0; y < dasKinect->getHeight(); y += step) {
+        for(int x = 0; x < dasKinect->getWidth(); x += step) {
+            if((curDist = dasKinect->getDistanceAt(x, y)) > 0
+               && curDist < 1250
+               )
+            {
+//                mesh.addColor(matisse.getColor(x+ofSignedNoise(theta)+2, y*1.5));
+                currentVec = dasKinect->getWorldCoordinateAt(x, y);
+                mesh.addVertex(currentVec.normalize() * dasKinect->getWorldCoordinateAt(x, y) );
+                
+                mesh.addVertex( dasKinect->getWorldCoordinateAt(x, y).rotateRad(TWO_PI/x, currentVec* dasKinect->getWorldCoordinateAt(x, y)));
+                
+            }
+        }
+    }
+    
+    // Remove vertexes that are very close to eachother
+    ofVec3f vectA, vectB;
+    for ( int i = 0; i < mesh.getNumVertices(); i++)
+    {
+        vectA = mesh.getVertex(i);
+        for (int y = i; y < mesh.getNumVertices(); y++)
+        {
+            vectB = mesh.getVertex(y);
+            
+            if(vectA.distance(vectB) < 10)
+            {
+                mesh.removeVertex(y);
+            }
+        }
+        
+    }
+
 }
 
 //-------------------------------- Connect Functions
@@ -253,14 +300,39 @@ void MeshFunctions::connectAbstractGrid(bool bWhichMethod)
             
         }
     }
-        
     
-}
+} //connectAbstract
 
 void MeshFunctions::connectAbstractGridTriangles()
 {
     mesh.setMode(OF_PRIMITIVE_TRIANGLES);
     mesh.setupIndicesAuto();
+}
+
+void MeshFunctions::connectHumanDistortion()
+{
+    ofVec3f vecA, vecB;
+
+    for (int i = 0; i < mesh.getNumVertices(); i++ ){
+        vecA = mesh.getVertex(i);
+        for ( int y = i; y < mesh.getNumVertices(); y+=2)
+        {
+            vecB = mesh.getVertex(y);
+            
+            vecA.squareDistance(vecB);
+            
+            if (vecA.length() < 650)
+            {
+                mesh.addIndex(y);
+                
+                if(vecA.distance(vecB) < 50) {
+                    mesh.addIndex(i);
+                }
+            }
+            
+            
+        }
+    }
 }
 
 
@@ -275,12 +347,27 @@ void MeshFunctions::drawPoints()
 void MeshFunctions::drawGrid()
 {
     mesh.setMode(OF_PRIMITIVE_LINES);
+    glLineWidth(2);
     
     flipKinectDrawing();
     
     mesh.draw();
     
 	ofDisableDepthTest();
+	ofPopMatrix();
+}
+
+void MeshFunctions::drawLines()
+{
+    mesh.setMode(OF_PRIMITIVE_LINES);
+    glLineWidth(2);
+    
+    // the projected points are 'upside down' and 'backwards'
+	ofScale(1, -1, 1);
+	ofTranslate(0, 0, -1000); // center the points a bit
+    
+    mesh.draw();
+    
 	ofPopMatrix();
 }
 
@@ -331,6 +418,56 @@ void MeshFunctions::drawBlobs()
 	ofPopMatrix();
 }
 
+void MeshFunctions::drawHumanDistortion(bool bPointsOrLines)
+{
+    ofPushMatrix();
+    
+    if (bPointsOrLines)
+    {
+        mesh.setMode(OF_PRIMITIVE_POINTS);
+    }
+    else
+    {
+        mesh.setMode(OF_PRIMITIVE_LINES);
+    }
+    
+	// the projected points are 'upside down' and 'backwards'
+	ofScale(1, -1, -1);
+	ofTranslate(0, 0, -1000); // center the points a bit
+    
+    float size  = mesh.getNumIndices()*0.001;
+    glPointSize(size); // 3
+    glLineWidth(size);
+    mesh.draw();
+    
+	ofPopMatrix();
+    
+}
+
+void MeshFunctions::drawGrowingHumanoid(bool bPointsOrLines)
+{
+    ofPushMatrix();
+    
+    if (bPointsOrLines)
+    {
+        mesh.setMode(OF_PRIMITIVE_POINTS);
+    }
+    else
+    {
+        mesh.setMode(OF_PRIMITIVE_LINES);
+    }
+    
+	// the projected points are 'upside down' and 'backwards'
+	ofScale(1, -1, 1);
+	ofTranslate(0, 0, -1000); // center the points a bit
+    
+    float size  = ((mesh.getNumVertices()*-1.0)+3500)*0.01;
+    glPointSize(size); // 3
+    glLineWidth(size);
+    mesh.draw();
+    
+	ofPopMatrix();
+}
 
 void MeshFunctions::flipKinectDrawing()
 {
@@ -379,24 +516,29 @@ void MeshFunctions::fillLookUpTables()
 
 //-----------------------------------------GettersAndSetters
 
-int MeshFunctions::getCurrentPreset()
+unsigned int MeshFunctions::getCurrentPreset()
 {
     return preset;
 }
 
-void MeshFunctions::setPreset(int nPreset)
+void MeshFunctions::setPreset(unsigned int nPreset)
 {
     preset = nPreset; 
 }
 
+//-----------------------------------------FormInitalizers
 void MeshFunctions::initSphere()
 {
     sphere.set(dasKinect->getWidth()*0.4, 40);
+//    sphere.set(dasKinect->getWidth()*0.25, 30);
     sphere.setPosition(ofVec3f(ofGetWidth()*0.5,ofGetHeight()*0.5, -1000*sin(0) ));
 }
 
-
-
-
-
+void MeshFunctions::initCone()
+{
+    int res = 50;
+    cone.setPosition(ofVec3f(ofGetWidth()*0.5,ofGetHeight()*0.5, -1000));
+    cone.setResolution(res, res, res);
+    cone.set(dasKinect->getWidth()*0.5, dasKinect->getHeight()*2);
+}
 
