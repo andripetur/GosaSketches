@@ -8,9 +8,7 @@ ofApp::ofApp() : oscThread(this) ,
 
 void ofApp::setup()
 {
-    ofBackground(0);
-    
-    ofSetFrameRate(60);
+//    ofSetFrameRate(60);
     setupKinect();
     
     oscThread.startThread(true);
@@ -28,14 +26,30 @@ void ofApp::setup()
     light.enable();
     
     post.init(ofGetWidth(), ofGetHeight());
-    post.setFlip(true);
-//    post.createPass<KaleidoscopePass>()->setEnabled(true);
-//    post.createPass<GodRaysPass>()->setEnabled(true);
-//    post.createPass<BloomPass>()->setEnabled(true);
-//    post.createPass<ConvolutionPass>()->setEnabled(true);
-//    post.createPass<NoiseWarpPass>()->setEnabled(true);
+    post.createPass<FxaaPass>()->setEnabled(true);
+    
+//    kScope = post.createPass<KaleidoscopePass>();
+//    kScope->setEnabled(true);
+    
+    rgbShift = post.createPass<RGBShiftPass>();
+    rgbShift->setEnabled(true);
+    
+    bloom = post.createPass<BloomPass>();
+    bloom->setEnabled(true);
+    
+    nWarp = post.createPass<NoiseWarpPass>();
+    nWarp->setEnabled(true);
+    
+    theta = 0;
+    
+    post.createPass<BleachBypassPass>()->setEnabled(true);
+    
 //    post.createPass<VerticalTiltShifPass>()->setEnabled(true);
 //    post.createPass<PixelatePass>()->setEnabled(true);
+    
+    postProcVariables[NOISE_AMP] = envelopeVariable(0.f, 0.05, 500.f);
+    postProcVariables[RGB_SHIFT_AMT] = envelopeVariable(0.001f, 0.1, 1000.f);
+    
 }
 
 //--------------------------------------------------------------
@@ -52,10 +66,21 @@ void ofApp::exit()
 //--------------------------------------------------------------
 void ofApp::update()
 {
+    
     // Update the kinect
     kinect.update();
     minimal.update();
-
+    
+    // Update all envelopes
+    for (int i = 0; i < NR_P_PROC_VAR+1; i++)
+    {
+        postProcVariables[i].update();
+    }
+    
+    nWarp->setAmplitude( postProcVariables[NOISE_AMP].getValue() );
+//    kScope->setSegments(ofMap(mouseX, 0, ofGetWidth(), 0, 50));
+    rgbShift->setAmount( postProcVariables[RGB_SHIFT_AMT].getValue() );
+    
     switch ( currentScene )
     {
         case HUMANOID:
@@ -82,29 +107,30 @@ void ofApp::update()
     }
     
     minimal.update();
+    theta+=0.05;
     
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    ofClear(0, 0, 0);
-    
- 
-    
     // copy enable part of gl state
     glPushAttrib(GL_ENABLE_BIT);
     
     // setup gl state
-    glEnable(GL_DEPTH_TEST);
+//    glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     
-//    cam.begin();
     post.begin(cam);
     
+    if(bAlpha) {
+        ofBackground(0, 0, 0, 100);
+    } else {
+        ofBackground(0, 0, 0, 250);
+    }
+
     switch ( currentScene )
     {
-        ofBackground(0);
             
         case MINIMAL:
             minimal.draw();
@@ -120,7 +146,8 @@ void ofApp::draw(){
     }
     
     post.end();
-//    cam.end();
+    
+//    minimal.draw();
     
     // set gl state back to original
     glPopAttrib();
@@ -155,6 +182,32 @@ void ofApp::setupKinect()
 void ofApp::oscDrTriggerCallBack(int which)
 {
     minimal.drumTriggers(which);
+    
+    
+    switch (which)
+    {
+        case KICK:
+            postProcVariables[NOISE_AMP].trigger();
+            break;
+            
+        case SNARE:
+            //need to fix: stop calling this function before effect is initalized
+            rgbShift->setAngle(fabs(ofSignedNoise(theta)));
+            postProcVariables[RGB_SHIFT_AMT].trigger();
+            break;
+            
+        case HH:
+            
+            break;
+            
+        case PERC:
+            
+            break;
+            
+        case COW:
+            
+            break;
+    }
 }
 
 void ofApp::oscEnergyCallback(float dasEnergy)
@@ -240,6 +293,10 @@ void ofApp::keyPressed(int key)
             {
                 abstract.setPreset( abstract.getCurrentPreset() + 1 );
             }
+            break;
+            
+        case 'a':
+            bAlpha = !bAlpha;
             break;
             
         } // switch
