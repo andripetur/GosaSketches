@@ -30,7 +30,15 @@ envelopeVariable::envelopeVariable(float _minValue, float _maxValue, float _deca
 void envelopeVariable::trigger()
 {
     isTriggered = true;
-    value = maxValue;
+    
+    if ( direction == DOWN)
+    {
+        value = maxValue;
+    }
+    else
+    {
+        value = minValue;
+    }
     
     calculateCrement();
 }
@@ -47,7 +55,15 @@ void envelopeVariable::calculateCrement()
     else if ( slope == COSINE)
     {
         increment = M_PI * 0.5 / nFrames;
-        theta = 0.0;
+        
+        if ( direction == DOWN)
+        {
+            theta = 0.0;
+        }
+        else
+        {
+            theta = M_PI * 0.5;
+        }
     }
     
 }
@@ -56,33 +72,53 @@ void envelopeVariable::update()
 {
     if (isTriggered)
     {
-        if (slope == LINEAR)
+        if (direction == DOWN)
         {
-            value-=decrement;
+            if (slope == LINEAR)
+            {
+                value-=decrement;
+            }
+            else if ( slope == COSINE)
+            {
+                value = ofMap(cos(theta), 0.0, 1.0, minValue, maxValue);
+                theta += increment;
+            }
+            
+            if (value <= minValue)
+            {
+                isTriggered = false;
+                value = minValue;
+            }
         }
-        else if ( slope == COSINE)
+        else // direction UP
         {
-            value = ofMap(cos(theta), 0.0, 1.0, minValue, maxValue);
-//            cout << cos(theta) << endl;
-            theta += increment;
-        }
-    }
-    
-    if (value <= minValue)
-    {
-        isTriggered = false;
-        value = minValue;
-    }
-    
-    
+            if (slope == LINEAR)
+            {
+                value+=decrement;
+            }
+            else if ( slope == COSINE)
+            {
+                value = ofMap(cos(theta), 0.0, 1.0, minValue, maxValue);
+                theta -= increment;
+            }
+            
+            if (value >= maxValue)
+            {
+                isTriggered = false;
+                value = maxValue;
+            }
 
-}
+        }
+    }
+
+} // update
 
 // Gets and Sets
 void envelopeVariable::setMinValue(float nMinValue) { minValue = nMinValue; }
 void envelopeVariable::setMaxValue(float nMaxValue) { maxValue = nMaxValue; }
 void envelopeVariable::setDecayLength(float nDecayLength) { decayLength = nDecayLength; }
 void envelopeVariable::setSlope(int nSlope) { slope = nSlope; }
+void envelopeVariable::setDirection(int nDirection) { nDirection = direction; }
 
 float envelopeVariable::getValue() { return value; }
 float envelopeVariable::getMinValue() { return minValue; }

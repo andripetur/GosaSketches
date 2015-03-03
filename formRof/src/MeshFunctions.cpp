@@ -14,7 +14,7 @@ MeshFunctions::MeshFunctions()
 //-------------------------------- Color Functions
 void MeshFunctions::colorMesh()
 {
-    for ( int i = 0; i < mesh.getNumIndices(); i++)
+    for ( int i = 0; i < mesh.getNumIndices(); ++i)
     {
         mesh.addColor(colorSource.getColor(i/colorSource.getWidth(), i/colorSource.getHeight()));
     }
@@ -129,7 +129,7 @@ void MeshFunctions::fillAbstractForm(bool bSphereOrCone)
     int numberOfVertices = mesh.getNumVertices();
     
     //Add the two meshesh together
-    for ( int i = 0; i < numberOfVertices; i++)
+    for ( int i = 0; i < numberOfVertices; ++i)
     {
 //        mesh.addColor(mesh2.getColor(i));
         mesh.setVertex(i,  mesh.getVertex(i) + mesh2.getVertex(i) );
@@ -162,10 +162,10 @@ void MeshFunctions::fillHumanDistortion()
     
     // Remove vertexes that are very close to eachother
     ofVec3f vectA, vectB;
-    for ( int i = 0; i < mesh.getNumVertices(); i++)
+    for ( int i = 0; i < mesh.getNumVertices(); ++i)
     {
         vectA = mesh.getVertex(i);
-        for (int y = i; y < mesh.getNumVertices(); y++)
+        for (int y = i; y < mesh.getNumVertices(); ++y)
         {
             vectB = mesh.getVertex(y);
             
@@ -223,7 +223,7 @@ void MeshFunctions::connectLines(bool vs1or2)
     float distance;
     
     //Go through vertexes and add lines inbetween them if they are close enough.
-    for (int a=0; a<numVerts-1; a++)
+    for (int a=0; a<numVerts-1; ++a)
     {
         verta = mesh.getVertex(a); // Get first vertex
         
@@ -313,7 +313,7 @@ void MeshFunctions::connectHumanDistortion()
 {
     ofVec3f vecA, vecB;
 
-    for (int i = 0; i < mesh.getNumVertices(); i++ ){
+    for (int i = 0; i < mesh.getNumVertices(); ++i ){
         vecA = mesh.getVertex(i);
         for ( int y = i; y < mesh.getNumVertices(); y+=2)
         {
@@ -347,13 +347,14 @@ void MeshFunctions::drawPoints()
 void MeshFunctions::drawGrid()
 {
     mesh.setMode(OF_PRIMITIVE_LINES);
-    glLineWidth(2);
+    glLineWidth(3);
+//    ofEnableDepthTest();
     
     flipKinectDrawing();
     
     mesh.draw();
     
-	ofDisableDepthTest();
+//	ofDisableDepthTest();
 	ofPopMatrix();
 }
 
@@ -378,6 +379,7 @@ void MeshFunctions::drawBoxes()
     ofPushMatrix();
     
 	flipKinectDrawing();
+    ofEnableDepthTest();
     
     int numVerts = mesh.getNumVertices();
     
@@ -399,6 +401,7 @@ void MeshFunctions::drawTriangles()
 	ofPushMatrix();
     
     flipKinectDrawing();
+    ofEnableDepthTest();
     
     mesh.draw();
     
@@ -411,6 +414,7 @@ void MeshFunctions::drawBlobs()
 	ofPushMatrix();
     
     flipKinectDrawing();
+    ofEnableDepthTest();
     
     mesh.draw();
     
@@ -474,7 +478,6 @@ void MeshFunctions::flipKinectDrawing()
     // the projected points are 'upside down' and 'backwards'
 	ofScale(1, -1, -1);
 	ofTranslate(0, 0, -1000); // center the points a bit
-	ofEnableDepthTest();
 }
 
 // -----------------------------------------_look-up_tables--
@@ -507,7 +510,7 @@ int MeshFunctions::howWondrous(int input) {
 
 void MeshFunctions::fillLookUpTables()
 {
-    for ( int i = 0; i < LOOKUP_TABLE_SIZE; i++)
+    for ( int i = 0; i < LOOKUP_TABLE_SIZE; ++i)
     {
         sinTable[i] = sin(i);
         wondTable[i] = howWondrous(i);

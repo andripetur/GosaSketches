@@ -11,8 +11,6 @@ void ofApp::setup()
 //    ofSetFrameRate(60);
     setupKinect();
     
-    oscThread.startThread(true);
-    
     // start from minimal scene.
     currentScene = MINIMAL;
     
@@ -40,16 +38,21 @@ void ofApp::setup()
     nWarp = post.createPass<NoiseWarpPass>();
     nWarp->setEnabled(true);
     
-    theta = 0;
-    
-    post.createPass<BleachBypassPass>()->setEnabled(true);
-    
+//    post.createPass<BleachBypassPass>()->setEnabled(true);
 //    post.createPass<VerticalTiltShifPass>()->setEnabled(true);
-//    post.createPass<PixelatePass>()->setEnabled(true);
     
-    postProcVariables[NOISE_AMP] = envelopeVariable(0.f, 0.05, 500.f);
-    postProcVariables[RGB_SHIFT_AMT] = envelopeVariable(0.001f, 0.1, 1000.f);
+    pProVar[NOISE_AMP] = envelopeVariable(0.f, 0.05, 500.f);
+    pProVar[N_AMP_MOD] = envelopeVariable(0.f, 0.005, 100.f);
+    pProVar[N_AMP_MOD].setSlope(envelopeVariable::COSINE);
     
+    pProVar[RGB_SHIFT_AMT] = envelopeVariable(0.001f, 0.1, 1000.f);
+    pProVar[RGB_SHIFT_AMT].setDirection(envelopeVariable::UP);
+    
+    pProVar[RGB_ANGLE] = envelopeVariable(0.001f, 0.1, 250);
+    
+    //Start osc thread last to avoid calling unInitalized functions
+    oscThread.startThread(true);
+
 }
 
 //--------------------------------------------------------------
@@ -70,22 +73,32 @@ void ofApp::update()
     // Update the kinect
     kinect.update();
     minimal.update();
+    minimal.update();
     
     // Update all envelopes
-    for (int i = 0; i < NR_P_PROC_VAR+1; i++)
+    for (int i = 0; i < NR_P_PROC_VAR+1; ++i)
     {
-        postProcVariables[i].update();
+        pProVar[i].update();
     }
     
-    nWarp->setAmplitude( postProcVariables[NOISE_AMP].getValue() );
-//    kScope->setSegments(ofMap(mouseX, 0, ofGetWidth(), 0, 50));
-    rgbShift->setAmount( postProcVariables[RGB_SHIFT_AMT].getValue() );
+    nWarp->setAmplitude( pProVar[NOISE_AMP].getValue() + pProVar[N_AMP_MOD].getValue() );
+    rgbShift->setAmount( pProVar[RGB_SHIFT_AMT].getValue() );
+    rgbShift->setAngle( pProVar[RGB_ANGLE].getValue());
+    
+    
+    //    kScope->setSegments(ofMap(mouseX, 0, ofGetWidth(), 0, 50));
+
     
     switch ( currentScene )
     {
+        case MINIMAL:
+            
+            break;
+            
         case HUMANOID:
             if(kinect.isFrameNew())
             {
+                
                 minimal.fillFbo();
                 humanoid.update();
             }
@@ -106,9 +119,6 @@ void ofApp::update()
         ofSetWindowTitle(ofToString(ofGetFrameRate()));
     }
     
-    minimal.update();
-    theta+=0.05;
-    
 }
 
 //--------------------------------------------------------------
@@ -118,7 +128,7 @@ void ofApp::draw(){
     glPushAttrib(GL_ENABLE_BIT);
     
     // setup gl state
-//    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     
     post.begin(cam);
@@ -183,25 +193,22 @@ void ofApp::oscDrTriggerCallBack(int which)
 {
     minimal.drumTriggers(which);
     
-    
     switch (which)
     {
         case KICK:
-            postProcVariables[NOISE_AMP].trigger();
+            pProVar[NOISE_AMP].trigger();
             break;
             
         case SNARE:
-            //need to fix: stop calling this function before effect is initalized
-            rgbShift->setAngle(fabs(ofSignedNoise(theta)));
-            postProcVariables[RGB_SHIFT_AMT].trigger();
+            pProVar[RGB_SHIFT_AMT].trigger();
             break;
             
         case HH:
-            
+            pProVar[N_AMP_MOD].trigger();
             break;
             
         case PERC:
-            
+            pProVar[RGB_ANGLE].trigger();
             break;
             
         case COW:

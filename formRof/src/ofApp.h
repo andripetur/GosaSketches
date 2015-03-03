@@ -56,18 +56,18 @@ public:
 // After effects.
     ofxPostProcessing post;
     ofLight light;
-    float theta;
 
     KaleidoscopePass::Ptr kScope;
     BloomPass::Ptr bloom;
     NoiseWarpPass::Ptr nWarp;
     RGBShiftPass::Ptr rgbShift;
+    PixelatePass::Ptr pixlate;
 
     bool bAlpha = true;
 
 //Envelopes
     enum pProcVariables
-    {NOISE_AMP = 0, RGB_SHIFT_AMT, NR_P_PROC_VAR};
-    envelopeVariable postProcVariables[NR_P_PROC_VAR+1];
+    {NOISE_AMP = 0, N_AMP_MOD, RGB_SHIFT_AMT, RGB_ANGLE, NR_P_PROC_VAR};
+    envelopeVariable pProVar[NR_P_PROC_VAR+1];
     		
 };

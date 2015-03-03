@@ -27,6 +27,7 @@ public:
     void setMaxValue(float nMaxValue);
     void setDecayLength(float nDecayLength);
     void setSlope(int nSlope);
+    void setDirection(int nDirection);
     
     float getValue();
     float getMinValue();
