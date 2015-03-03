@@ -16,11 +16,13 @@ oscReceiverThread::oscReceiverThread(ofApp* setOwner)
     
 }
 
-void oscReceiverThread::threadedFunction() {
+void oscReceiverThread::threadedFunction()
+{
     // while thread is running
     while(isThreadRunning())
     {
-        if (receiver.hasWaitingMessages() ) {
+        if (receiver.hasWaitingMessages() )
+        {
             
             receiver.getNextMessage(&m);
             messageAdress = m.getAddress();
@@ -49,7 +51,14 @@ void oscReceiverThread::threadedFunction() {
             {
                 owner->oscEnergyCallback(m.getArgAsFloat(0));
             }
+
         }
+        else
+        {
+            // If no wating message. Sleep one frame. 
+            sleep(1000/ofGetFrameRate());
+        }
+        
     } // while
 
 }

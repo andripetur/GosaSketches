@@ -94,7 +94,8 @@ void Minimal::drumTriggers(int which)
     
 }// drumTriggers
 
-void Minimal::setReductionSpeed(float nSpeed) {
+void Minimal::setReductionSpeed(float nSpeed)
+{
     reductionSpeed = nSpeed;
 }
 

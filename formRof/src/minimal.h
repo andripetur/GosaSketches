@@ -16,7 +16,8 @@
 #include "Triangle.h"
 #include "Square.h"
 
-class Minimal {
+class Minimal
+{
 
 public:
     Minimal(int width, int height);
@@ -42,7 +43,7 @@ private:
     unsigned int colorSwitchTrigger;
     unsigned int growToSize = 200;
     
-    float reductionSpeed;
+    float reductionSpeed = 0;
     
     Circle hringur;
     Triangle thrihorn;

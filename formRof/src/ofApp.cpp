@@ -9,7 +9,7 @@ ofApp::ofApp() : oscThread(this) ,
 void ofApp::setup()
 {
 //    ofSetFrameRate(60);
-    setupKinect();
+//    setupKinect();
     
     // start from minimal scene.
     currentScene = MINIMAL;
@@ -39,16 +39,19 @@ void ofApp::setup()
     nWarp->setEnabled(true);
     
 //    post.createPass<BleachBypassPass>()->setEnabled(true);
-//    post.createPass<VerticalTiltShifPass>()->setEnabled(true);
+    verTiltShift = post.createPass<VerticalTiltShifPass>();
+    verTiltShift->setEnabled(true);
     
-    pProVar[NOISE_AMP] = envelopeVariable(0.f, 0.05, 500.f);
-    pProVar[N_AMP_MOD] = envelopeVariable(0.f, 0.005, 100.f);
+    pProVar[NOISE_AMP] = envelopeVariable(0.f, 0.04, 522.f);
+    pProVar[N_AMP_MOD] = envelopeVariable(1, 1.5, 100.f);
     pProVar[N_AMP_MOD].setSlope(envelopeVariable::COSINE);
     
     pProVar[RGB_SHIFT_AMT] = envelopeVariable(0.001f, 0.1, 1000.f);
-    pProVar[RGB_SHIFT_AMT].setDirection(envelopeVariable::UP);
-    
+    pProVar[RGB_SHIFT_AMT].setDirection( envelopeVariable::UP);
     pProVar[RGB_ANGLE] = envelopeVariable(0.001f, 0.1, 250);
+    
+    pProVar[TILT_SHIFT] = envelopeVariable(0.0, 1.5, 500);
+    pProVar[TILT_SHIFT].setDirection( envelopeVariable::UP );
     
     //Start osc thread last to avoid calling unInitalized functions
     oscThread.startThread(true);
@@ -76,18 +79,19 @@ void ofApp::update()
     minimal.update();
     
     // Update all envelopes
-    for (int i = 0; i < NR_P_PROC_VAR+1; ++i)
+    for (int i = 0; i < NR_P_PROC_VAR; ++i)
     {
         pProVar[i].update();
     }
     
-    nWarp->setAmplitude( pProVar[NOISE_AMP].getValue() + pProVar[N_AMP_MOD].getValue() );
+    nWarp->setAmplitude( pProVar[NOISE_AMP].getValue() * pProVar[N_AMP_MOD].getValue() );
     rgbShift->setAmount( pProVar[RGB_SHIFT_AMT].getValue() );
-    rgbShift->setAngle( pProVar[RGB_ANGLE].getValue());
+    rgbShift->setAngle( pProVar[RGB_ANGLE].getValue() );
+    verTiltShift->setH( pProVar[TILT_SHIFT].getValue() );
+
     
     
     //    kScope->setSegments(ofMap(mouseX, 0, ofGetWidth(), 0, 50));
-
     
     switch ( currentScene )
     {
@@ -98,7 +102,6 @@ void ofApp::update()
         case HUMANOID:
             if(kinect.isFrameNew())
             {
-                
                 minimal.fillFbo();
                 humanoid.update();
             }
@@ -215,6 +218,7 @@ void ofApp::oscDrTriggerCallBack(int which)
             
             break;
     }
+    
 }
 
 void ofApp::oscEnergyCallback(float dasEnergy)
@@ -222,7 +226,7 @@ void ofApp::oscEnergyCallback(float dasEnergy)
     
 }
 
-void ofApp::oscBpmCallback(float dasBpm)
+void ofApp::oscBpmCallback(float dasBpm )
 {
     
 }
@@ -262,6 +266,7 @@ void ofApp::keyPressed(int key)
             //FakeDrumHit
         case 'd':
         case 'D':
+            pProVar[TILT_SHIFT].trigger();
             minimal.drumTriggers(9);
             break;
             
@@ -284,7 +289,7 @@ void ofApp::keyPressed(int key)
             {
                 humanoid.setPreset( humanoid.getCurrentPreset() - 1 );
             }
-            else if ( currentScene == ABSTRACT)
+            else if ( currentScene == ABSTRACT )
             {
                 abstract.setPreset( abstract.getCurrentPreset() - 1 );
             }
@@ -296,7 +301,7 @@ void ofApp::keyPressed(int key)
             {
                 humanoid.setPreset( humanoid.getCurrentPreset() + 1 );
             }
-            else if ( currentScene == ABSTRACT)
+            else if ( currentScene == ABSTRACT )
             {
                 abstract.setPreset( abstract.getCurrentPreset() + 1 );
             }
@@ -304,6 +309,10 @@ void ofApp::keyPressed(int key)
             
         case 'a':
             bAlpha = !bAlpha;
+            break;
+            
+        case ' ':
+
             break;
             
         } // switch

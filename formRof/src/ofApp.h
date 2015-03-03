@@ -62,12 +62,15 @@ public:
     NoiseWarpPass::Ptr nWarp;
     RGBShiftPass::Ptr rgbShift;
     PixelatePass::Ptr pixlate;
+    VerticalTiltShifPass::Ptr verTiltShift;
 
     bool bAlpha = true;
 
 //Envelopes
     enum pProcVariables
-    {NOISE_AMP = 0, N_AMP_MOD, RGB_SHIFT_AMT, RGB_ANGLE, NR_P_PROC_VAR};
-    envelopeVariable pProVar[NR_P_PROC_VAR+1];
+    {NOISE_AMP = 0, N_AMP_MOD, RGB_SHIFT_AMT, RGB_ANGLE, TILT_SHIFT, NR_P_PROC_VAR};
+    envelopeVariable pProVar[NR_P_PROC_VAR];
+    
+
     		
 };

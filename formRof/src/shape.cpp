@@ -22,11 +22,7 @@ void Shape::update()
         theta += spinSpeed;
     }
     
-    if ( size > initSize )
-    {
-        size -= shrinker;
-    }
-    
+     
     checkEdges();
 }
 
@@ -42,7 +38,8 @@ void Shape::checkEdges()
         direction.y *= -1;
     }
     
-    if ( location.z > 0 || location.z < (ofGetHeight()*-1) ) {
+    if ( location.z > 0 || location.z < (ofGetHeight()*-1) )
+    {
         direction.z *= -1;
     }
 }
