@@ -27,14 +27,16 @@ public:
     void setPreset(int nPreset);
 
 private:
-    enum HumanoidPresets {
+    enum HumanoidPresets
+    {
         PLAIN_POINTS = 0,
         GROW_POINTS,
         GROW_LINES,
         GRID, LINES_ONE,
         LINES_TWO, BOXES,
         BOXES_TWO,
-        HUMANOID_NR_OF_PRES};
+        HUMANOID_NR_OF_PRES
+    };
 
 };
 #endif /* defined(__formRof__Humanoid__) */

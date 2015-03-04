@@ -11,6 +11,27 @@
 MeshFunctions::MeshFunctions()
 { }
 
+void MeshFunctions::threadedFunction()
+{
+    
+    while ( isThreadRunning() )
+    {
+        
+        if ( newFrame )
+        {
+            lock();
+                update();
+                newFrame = false;
+            unlock();
+        }
+        else
+        {
+            sleep( (1000.0/ofGetFrameRate())*0.5);
+        }
+    }
+    
+}
+
 //-------------------------------- Color Functions
 void MeshFunctions::colorMesh()
 {
@@ -31,9 +52,9 @@ void MeshFunctions::kinectToMesh(int step)
     }
 }
 
-void MeshFunctions::fillGrid()
+void MeshFunctions::fillGrid(int step)
 {
-    int step = 10;
+//    int step = 10;
     ofVec3f currentVec;
     float curDist;
     
@@ -374,12 +395,11 @@ void MeshFunctions::drawLines()
 
 void MeshFunctions::drawBoxes()
 {
-    mesh.setMode(OF_PRIMITIVE_TRIANGLES);
+//    mesh.setMode(OF_PRIMITIVE_TRIANGLES);
     
     ofPushMatrix();
     
 	flipKinectDrawing();
-    ofEnableDepthTest();
     
     int numVerts = mesh.getNumVertices();
     
@@ -391,7 +411,6 @@ void MeshFunctions::drawBoxes()
         
     }
     
-	ofDisableDepthTest();
 	ofPopMatrix();
 }
 
@@ -482,7 +501,8 @@ void MeshFunctions::flipKinectDrawing()
 
 // -----------------------------------------_look-up_tables--
 
-int MeshFunctions::howWondrous(int input) {
+int MeshFunctions::howWondrous(int input)
+{
     int steps = 0;
     
     while (input != 1)
@@ -526,14 +546,20 @@ unsigned int MeshFunctions::getCurrentPreset()
 
 void MeshFunctions::setPreset(unsigned int nPreset)
 {
-    preset = nPreset; 
+    preset = nPreset;
+}
+
+void MeshFunctions::setNewFrame()
+{
+    lock();
+        newFrame = true;
+    unlock();
 }
 
 //-----------------------------------------FormInitalizers
 void MeshFunctions::initSphere()
 {
     sphere.set(dasKinect->getWidth()*0.4, 40);
-//    sphere.set(dasKinect->getWidth()*0.25, 30);
     sphere.setPosition(ofVec3f(ofGetWidth()*0.5,ofGetHeight()*0.5, -1000*sin(0) ));
 }
 

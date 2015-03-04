@@ -10,10 +10,13 @@
 
 Humanoid::Humanoid(ofxKinect *nKinect, ofFbo* nFbo)
 {
+    lock();
     dasKinect = nKinect;
     dasFbo = nFbo;
     
     colorSource.allocate(dasFbo->getWidth(), dasFbo->getHeight(), OF_IMAGE_COLOR);
+    
+    unlock();
     fillLookUpTables();
     
 }
@@ -23,23 +26,18 @@ Humanoid::~Humanoid()
     
 }
 
-void Humanoid::setPreset(int nPreset)
-{
-    if (nPreset >= 0 && nPreset < HUMANOID_NR_OF_PRES)
-    {
-        MeshFunctions::setPreset( nPreset );
-    }
-}
-
 void Humanoid::update()
 {
     mesh.clear();
-    dasFbo->readToPixels(colorSource);
+    
+//    dasFbo->readToPixels(colorSource);
     
     switch ( getCurrentPreset() )
     {
         case PLAIN_POINTS:
-            kinectToMesh(5);
+            kinectToMesh(20);
+            connectGrid();
+            connectLines(true);
             break;
             
         case GROW_POINTS:
@@ -48,8 +46,7 @@ void Humanoid::update()
             break;
             
         case GRID:
-        case BOXES_TWO:
-            fillGrid();
+            fillGrid(10);
             connectGrid();
             break;
             
@@ -64,16 +61,21 @@ void Humanoid::update()
             break;
             
         case BOXES:
-            kinectToMesh(10);
+            kinectToMesh(15);
+            break;
+            
+        case BOXES_TWO:
+            fillGrid(15);
             break;
     }
     
-    colorMesh();
-
+//    colorMesh();
+    
 } // Update
 
 void Humanoid::draw()
 {
+    lock();
     switch ( getCurrentPreset() )
     {
         case PLAIN_POINTS:
@@ -102,9 +104,16 @@ void Humanoid::draw()
             drawGrowingHumanoid(false);
             break;
             
-            
-        
     }
+    unlock();
     
+}
+
+void Humanoid::setPreset(int nPreset)
+{
+    if (nPreset >= 0 && nPreset < HUMANOID_NR_OF_PRES)
+    {
+        MeshFunctions::setPreset( nPreset );
+    }
 }
 

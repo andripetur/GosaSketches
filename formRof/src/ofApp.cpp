@@ -8,8 +8,8 @@ ofApp::ofApp() : oscThread(this) ,
 
 void ofApp::setup()
 {
-//    ofSetFrameRate(60);
-//    setupKinect();
+    ofSetFrameRate(33);
+    setupKinect();
     
     // start from minimal scene.
     currentScene = MINIMAL;
@@ -38,7 +38,6 @@ void ofApp::setup()
     nWarp = post.createPass<NoiseWarpPass>();
     nWarp->setEnabled(true);
     
-//    post.createPass<BleachBypassPass>()->setEnabled(true);
     verTiltShift = post.createPass<VerticalTiltShifPass>();
     verTiltShift->setEnabled(true);
     
@@ -66,15 +65,19 @@ void ofApp::exit()
         
     //Receiver thread
     oscThread.waitForThread();
+    
+    //Close other running threads.
+    if( abstract.isThreadRunning()) abstract.waitForThread();
+    if( humanoid.isThreadRunning()) humanoid.waitForThread();
 	
 }
 
 //--------------------------------------------------------------
 void ofApp::update()
 {
-    
     // Update the kinect
     kinect.update();
+    
     minimal.update();
     minimal.update();
     
@@ -88,14 +91,15 @@ void ofApp::update()
     rgbShift->setAmount( pProVar[RGB_SHIFT_AMT].getValue() );
     rgbShift->setAngle( pProVar[RGB_ANGLE].getValue() );
     verTiltShift->setH( pProVar[TILT_SHIFT].getValue() );
-
-    
     
     //    kScope->setSegments(ofMap(mouseX, 0, ofGetWidth(), 0, 50));
     
     switch ( currentScene )
     {
         case MINIMAL:
+            // Close other scenes working threads if running.
+            if( abstract.isThreadRunning()) abstract.waitForThread();
+            if( humanoid.isThreadRunning()) humanoid.waitForThread();
             
             break;
             
@@ -103,7 +107,14 @@ void ofApp::update()
             if(kinect.isFrameNew())
             {
                 minimal.fillFbo();
-                humanoid.update();
+                
+                // If abs is running, close it.
+                if(abstract.isThreadRunning()) abstract.waitForThread();
+                
+                // if hum isn't running start it.
+                if (!humanoid.isThreadRunning()) humanoid.startThread(true);
+                
+                humanoid.setNewFrame();
             }
             break;
             
@@ -112,13 +123,21 @@ void ofApp::update()
             if(kinect.isFrameNew())
             {
                 minimal.fillFbo();
-                abstract.update();
+                
+                // if hum is running, close it.
+                if(humanoid.isThreadRunning()) humanoid.waitForThread();
+                
+                // if abs ain't running, start it.
+                if (!abstract.isThreadRunning()) abstract.startThread(true);
+
+                abstract.setNewFrame();
             }
             break;
     }
     
     //Set fps as window title, if of is not fullscreen. 
-    if ( ofGetWindowMode() != OF_FULLSCREEN ) {
+    if ( ofGetWindowMode() != OF_FULLSCREEN )
+    {
         ofSetWindowTitle(ofToString(ofGetFrameRate()));
     }
     

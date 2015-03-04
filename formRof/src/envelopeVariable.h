@@ -10,7 +10,7 @@
 #define __formRof__envelopeVariable__
 #include "ofMain.h"
 
-class envelopeVariable
+class envelopeVariable 
 {
 public:
     envelopeVariable();

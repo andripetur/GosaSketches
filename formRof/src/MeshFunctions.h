@@ -14,7 +14,7 @@
 
 #define LOOKUP_TABLE_SIZE 2500
 
-class MeshFunctions
+class MeshFunctions : public ofThread
 {
 public: 
     MeshFunctions();
@@ -31,10 +31,14 @@ public:
     int wondTable[LOOKUP_TABLE_SIZE];
     
     int howWondrous(int input);
-    void fillLookUpTables(); 
+    void fillLookUpTables();
+    
+    virtual void update() = 0;
+    
+    void threadedFunction();
     
     //Fill functions
-    void fillGrid();
+    void fillGrid(int step);
     void fillLines();
     void fillAbstractGrid(bool bWhichMethod);
     void fillAbstractForm(bool bSphereOrCone);
@@ -62,10 +66,14 @@ public:
     unsigned int getCurrentPreset();
     void virtual setPreset(unsigned int nPreset);
     
+    void setNewFrame();
+    
     void initSphere();
     void initCone(); // resolution of form is a big influence on looks
     
 private:
+    bool newFrame = false;
+    
     unsigned int preset;
     ofSpherePrimitive sphere;
     ofConePrimitive cone;

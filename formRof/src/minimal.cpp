@@ -21,7 +21,7 @@ Minimal::Minimal(int width, int height) {
     colorMatcher.generateComplementaryTriad();
     
     nrDrumHits = 0;
-    colorSwitchTrigger = 5;
+    colorSwitchTrigger = 10;
     
 }
 

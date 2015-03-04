@@ -10,14 +10,17 @@
 
 Abstract::Abstract( ofxKinect *nKinect, ofFbo* nFbo )
 {
+    lock();
     dasKinect = nKinect;
     dasFbo = nFbo;
-    
     colorSource.allocate(dasFbo->getWidth(), dasFbo->getHeight(), OF_IMAGE_COLOR);
+    
+    unlock();
     fillLookUpTables();
     
     initSphere();
-    initCone(); 
+    initCone();
+
 }
 
 Abstract::~Abstract()
@@ -90,6 +93,7 @@ void Abstract::update()
 
 void Abstract::draw()
 {
+    lock();
     switch ( getCurrentPreset() )
     {
         case AB_GRID_ONE:
@@ -126,6 +130,8 @@ void Abstract::draw()
             
             
     }// switch
+    unlock();
+    
 }
 
 void Abstract::setPreset(int nPreset)
