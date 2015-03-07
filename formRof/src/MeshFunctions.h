@@ -13,6 +13,7 @@
 #include "ofxKinect.h"
 
 #define LOOKUP_TABLE_SIZE 2500
+#define PLAY_ARRAY_SIZE 100
 
 class MeshFunctions : public ofThread
 {
@@ -67,15 +68,24 @@ public:
     // Gets and sets
     unsigned int getCurrentPreset();
     void virtual setPreset(unsigned int nPreset);
+    void setNrOfPresets(unsigned int nrOfPresets);
     void setNewFrame();
     
     void initSphere();
     void initCone(); // resolution of form is a big influence on looks
     
+    void changePreset();
+    void setPlaysZero();
+    
 private:
     bool newFrame = false;
     
     unsigned int preset;
+    unsigned int nrOfPresets;
+    unsigned int nrOfPlays[PLAY_ARRAY_SIZE];
+    
+    unsigned int totalPlays;
+    
     ofSpherePrimitive sphere;
     ofConePrimitive cone;
     

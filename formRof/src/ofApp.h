@@ -8,11 +8,10 @@
 #include "Humanoid.h"
 #include "Abstract.h"
 #include "envelopeVariable.h"
+#include "Timer.h"
 
-// drumTriggers
-enum {KICK = 0, SNARE, HH, PERC, COW};
-// SceneNames
-enum {MINIMAL = 0, HUMANOID, ABSTRACT};
+enum drumTriggers {KICK = 0, SNARE, HH, PERC, COW};
+enum sceneNames {MINIMAL = 0, HUMANOID, ABSTRACT};
 
 class ofApp : public ofBaseApp
 {
@@ -49,7 +48,7 @@ public:
     Abstract abstract;
 
     int currentScene;
-
+    
 // Cam stuff
     ofEasyCam cam;
 
@@ -63,12 +62,24 @@ public:
     RGBShiftPass::Ptr rgbShift;
     PixelatePass::Ptr pixlate;
     VerticalTiltShifPass::Ptr verTiltShift;
+    
+    void setupPostProccessing();
 
-    bool bAlpha = true;
+    bool bAlpha = false;
 
 //Envelopes
     enum pProcVariables
     {NOISE_AMP = 0, N_AMP_MOD, RGB_SHIFT_AMT, RGB_ANGLE, TILT_SHIFT, NR_P_PROC_VAR};
     envelopeVariable pProVar[NR_P_PROC_VAR];
+    
+// NoteLengths
+    int currentBpm;
+    void calcNoteLengths();
+    
+    enum noteLengths {_1n, _2n, _4n, _8n, _16n, _32n, NR_NVALUES};
+    float nVal[NR_NVALUES];
+    
+    Timer sceneTimer;
+    void checkTimer(); 
         		
 };

@@ -9,7 +9,10 @@
 #include "MeshFunctions.h"
 
 MeshFunctions::MeshFunctions()
-{ }
+{
+    setPlaysZero();
+    totalPlays = 0;
+}
 
 void MeshFunctions::threadedFunction()
 {
@@ -30,6 +33,46 @@ void MeshFunctions::threadedFunction()
         }
     }
     
+}
+
+void MeshFunctions::changePreset()
+// Pick new preset semi-randomly. Presets who haven't been played as
+// often are more likely to be chosen.
+{
+    vector<int> hector;
+    int nrOfRepValues;
+    
+    if ( totalPlays != 0 )
+    {
+        for( int i = 0; i < nrOfPresets; ++i)
+        {
+            nrOfRepValues = (nrOfPlays[i]*-1) + totalPlays;
+            
+            for( int r = 0; r < nrOfRepValues; ++r)
+            {
+                hector.push_back(i);
+            }
+        }
+        
+        int RAN = (int)floor( ofRandom( hector.size() ));
+        preset = hector.at( RAN );
+        
+    }
+    else
+    {
+        preset = int(ofRandom(nrOfPresets));
+    }
+    
+    totalPlays++;
+    nrOfPlays[preset]++;
+}
+
+void MeshFunctions::setPlaysZero()
+{
+    for(int i = 0; i < PLAY_ARRAY_SIZE; i++)
+    {
+        nrOfPlays[i] = 0;
+    }
 }
 
 //-------------------------------- Color Functions
@@ -175,7 +218,6 @@ void MeshFunctions::fillHumanDistortion()
     ofVec3f currentVec;
     float curDist;
 
-    
     // Go through depth image, add vertexes
     for(int y = 0; y < dasKinect->getHeight(); y += step) {
         for(int x = 0; x < dasKinect->getWidth(); x += step) {
@@ -367,7 +409,6 @@ void MeshFunctions::connectHumanDistortion()
         }
     }
 }
-
 
 //--------------------------------Draw functions
 void MeshFunctions::drawPoints()
@@ -561,6 +602,11 @@ unsigned int MeshFunctions::getCurrentPreset()
 void MeshFunctions::setPreset(unsigned int nPreset)
 {
     preset = nPreset;
+}
+
+void MeshFunctions::setNrOfPresets(unsigned int nrOfPresets)
+{
+    this->nrOfPresets = nrOfPresets;
 }
 
 void MeshFunctions::setNewFrame()

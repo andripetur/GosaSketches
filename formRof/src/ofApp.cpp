@@ -13,21 +13,49 @@ void ofApp::setup()
     
     // start from minimal scene.
     currentScene = MINIMAL;
+    currentBpm = 120;
+    calcNoteLengths();
+    
+    sceneTimer.setLength( nVal[_1n]*4 );
     
     cam.enableMouseInput();
-    
-    // initalize postProcessing
-    ofSetCoordHandedness(OF_RIGHT_HANDED);
     
     // Setup light
 	light.setPosition(1000, 1000, 2000);
     light.enable();
     
+    setupPostProccessing();
+    
+    //Start osc thread last to avoid calling unInitalized functions
+    oscThread.startThread(true);
+}
+
+void ofApp::setupKinect()
+{
+    // enable depth->video image calibration
+    kinect.setRegistration(true);
+    
+    // Initalise kinect - disable video image.
+    kinect.init(false, false);
+    
+    // opens the kinect
+    kinect.open();
+    
+    // setAngle on startup.
+    kinectAngle = kinectAngleStart;
+	kinect.setCameraTiltAngle(kinectAngle);
+}
+
+void ofApp::setupPostProccessing()
+{
+    // initalize postProcessing
+    ofSetCoordHandedness(OF_RIGHT_HANDED);
     post.init(ofGetWidth(), ofGetHeight());
+    
     post.createPass<FxaaPass>()->setEnabled(true);
     
-//    kScope = post.createPass<KaleidoscopePass>();
-//    kScope->setEnabled(true);
+    //    kScope = post.createPass<KaleidoscopePass>();
+    //    kScope->setEnabled(true);
     
     rgbShift = post.createPass<RGBShiftPass>();
     rgbShift->setEnabled(true);
@@ -38,8 +66,8 @@ void ofApp::setup()
     nWarp = post.createPass<NoiseWarpPass>();
     nWarp->setEnabled(true);
     
-//    verTiltShift = post.createPass<VerticalTiltShifPass>();
-//    verTiltShift->setEnabled(true);
+    //    verTiltShift = post.createPass<VerticalTiltShifPass>();
+    //    verTiltShift->setEnabled(true);
     
     pProVar[NOISE_AMP] = envelopeVariable(0.f, 0.04, 522.f);
     pProVar[N_AMP_MOD] = envelopeVariable(1, 1.5, 100.f);
@@ -49,11 +77,8 @@ void ofApp::setup()
     pProVar[RGB_SHIFT_AMT].setDirection( envelopeVariable::UP);
     pProVar[RGB_ANGLE] = envelopeVariable(0.001f, 0.1, 250);
     
-//    pProVar[TILT_SHIFT] = envelopeVariable(0.0, 1.5, 500);
-//    pProVar[TILT_SHIFT].setDirection( envelopeVariable::UP );
-    
-    //Start osc thread last to avoid calling unInitalized functions
-    oscThread.startThread(true);
+    //    pProVar[TILT_SHIFT] = envelopeVariable(0.0, 1.5, 500);
+    //    pProVar[TILT_SHIFT].setDirection( envelopeVariable::UP );
 }
 
 //--------------------------------------------------------------
@@ -98,14 +123,14 @@ void ofApp::update()
             if( abstract.isThreadRunning()) abstract.waitForThread();
             if( humanoid.isThreadRunning()) humanoid.waitForThread();
             
-            minimal.fillFbo();
-            
+//            minimal.fillFbo();            
             break;
             
         case HUMANOID:
             if(kinect.isFrameNew())
             {
                 minimal.fillFbo();
+                sceneTimer.setLength( nVal[_1n]*4 );
                 
                 // If abs is running, close it.
                 if(abstract.isThreadRunning()) abstract.waitForThread();
@@ -114,7 +139,6 @@ void ofApp::update()
                 if (!humanoid.isThreadRunning()) humanoid.startThread(true);
                 
                 humanoid.setNewFrame();
-
             }
             break;
             
@@ -123,6 +147,7 @@ void ofApp::update()
             if(kinect.isFrameNew())
             {
                 minimal.fillFbo();
+                sceneTimer.setLength( nVal[_1n] * 2 );
                 
                 // if hum is running, close it.
                 if(humanoid.isThreadRunning()) humanoid.waitForThread();
@@ -163,7 +188,6 @@ void ofApp::draw()
 
     switch ( currentScene )
     {
-            
         case MINIMAL:
             minimal.draw();
 //            minimal.drawTwoDee();
@@ -194,23 +218,6 @@ void ofApp::draw()
     
 }
 
-//--------------------------------------------------------------
-void ofApp::setupKinect()
-{
-    // enable depth->video image calibration
-    kinect.setRegistration(true);
-    
-    // Initalise kinect - disable video image.
-    kinect.init(false, false);
-    
-    // opens the kinect
-    kinect.open();
-    
-    // setAngle on startup.
-    kinectAngle = kinectAngleStart;
-	kinect.setCameraTiltAngle(kinectAngle);
-}
-
 //----------------Osc_Callback_funtions--------------------------
 void ofApp::oscDrTriggerCallBack(int which)
 {
@@ -220,6 +227,7 @@ void ofApp::oscDrTriggerCallBack(int which)
     {
         case KICK:
             pProVar[NOISE_AMP].trigger();
+            checkTimer();
             break;
             
         case SNARE:
@@ -241,14 +249,73 @@ void ofApp::oscDrTriggerCallBack(int which)
     
 }
 
+// ---------------- Scene chooser.
 void ofApp::oscEnergyCallback(float dasEnergy)
 {
+    int lastScene = currentScene;
     
+    if (dasEnergy < 0.3 )
+    {
+        currentScene = MINIMAL;
+    }
+    else if ( dasEnergy < 0.6)
+    {
+        currentScene = HUMANOID;
+    }
+    else
+    {
+        currentScene = ABSTRACT;  
+    }
+    
+    // if time beetween scene switch and next preset change is shorter than
+    // 1 second turn alpha down.
+    if (lastScene != currentScene )
+    {
+        if (sceneTimer.getTimeToNextDing() < 1000)
+        {
+            bAlpha = true;
+        }
+    }
 }
 
 void ofApp::oscBpmCallback(float dasBpm )
 {
+    if (dasBpm != currentBpm)
+    {
+        dasBpm = currentBpm;
+        calcNoteLengths();
+    }
+}
+
+void ofApp::calcNoteLengths()
+{
+    float wholeNote = (240000.f/(float)currentBpm);
+    nVal[_1n] = wholeNote;
     
+    for ( int i = 1; i < NR_NVALUES; ++i )
+    {
+        nVal[i] = nVal[i-1] * 0.5;
+    }
+    
+    
+}
+
+void ofApp::checkTimer()
+{
+    if ( sceneTimer.checkTimer() )
+    {
+        if ( currentScene == HUMANOID)
+        {
+            humanoid.changePreset();
+        }
+        
+        if ( currentScene == ABSTRACT )
+        {
+            abstract.changePreset();
+        }
+        
+        bAlpha = false;
+    }
 }
 
 //----------------User_Input--------------------------------------
@@ -331,6 +398,14 @@ void ofApp::keyPressed(int key)
             
         case ' ':
             
+            if ( currentScene == HUMANOID )
+            {
+                humanoid.changePreset();
+            }
+            if ( currentScene == ABSTRACT )
+            {
+                abstract.changePreset();
+            }
             break;
             
         } // switch

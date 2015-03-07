@@ -17,6 +17,10 @@ Humanoid::Humanoid(ofxKinect *nKinect, ofFbo* nFbo)
     colorSource.allocate(dasFbo->getWidth(), dasFbo->getHeight(), OF_IMAGE_COLOR);
     
     unlock();
+    
+    setNrOfPresets(HUMANOID_NR_OF_PRES);
+    setPlaysZero();
+    
     fillLookUpTables();
     
 }

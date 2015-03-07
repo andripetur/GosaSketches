@@ -20,6 +20,9 @@ Abstract::Abstract( ofxKinect *nKinect, ofFbo* nFbo )
     
     initSphere();
     initCone();
+    
+    setNrOfPresets(NR_OF_AB_PRESETS);
+    setPlaysZero();
 
 }
 

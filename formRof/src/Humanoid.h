@@ -33,7 +33,8 @@ private:
         PLAIN_POINTS = 0,
         GROW_POINTS,
         GROW_LINES,
-        GRID, LINES_ONE,
+        GRID,
+        LINES_ONE,
         LINES_TWO, BOXES,
         BOXES_TWO,
         HUMANOID_NR_OF_PRES
