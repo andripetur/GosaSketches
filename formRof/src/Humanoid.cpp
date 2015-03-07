@@ -27,10 +27,9 @@ Humanoid::~Humanoid()
 }
 
 void Humanoid::update()
-{
+{    
     mesh.clear();
-    
-//    dasFbo->readToPixels(colorSource);
+    clearSourceToColor(ofColor(255,255,255));
     
     switch ( getCurrentPreset() )
     {
@@ -69,13 +68,16 @@ void Humanoid::update()
             break;
     }
     
-//    colorMesh();
-    
 } // Update
 
 void Humanoid::draw()
 {
+    
     lock();
+    
+    dasFbo->readToPixels(colorSource);
+    colorMesh();
+    
     switch ( getCurrentPreset() )
     {
         case PLAIN_POINTS:

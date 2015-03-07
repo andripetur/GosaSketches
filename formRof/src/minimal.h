@@ -20,19 +20,20 @@ class Minimal
 {
 
 public:
+    Minimal() {}
     Minimal(int width, int height);
     ~Minimal();
     
     // Functions
     void update();
     void draw();
+    void drawTwoDee();
     void fillFbo();
     
     void drumTriggers(int which);
     
     // Sets and Gets
     ofFbo * getColorSourceFboPointer();
-    void setReductionSpeed(float nSpeed);
     
 private:
     ofxColorPalette colorMatcher;
@@ -41,9 +42,6 @@ private:
     
     unsigned int nrDrumHits;
     unsigned int colorSwitchTrigger;
-    unsigned int growToSize = 200;
-    
-    float reductionSpeed = 0;
     
     Circle hringur;
     Triangle thrihorn;

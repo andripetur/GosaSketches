@@ -1,10 +1,10 @@
 #include "ofApp.h"
 //------------------Constructor_and_setup__Initalize_Dat_SHit------------
 ofApp::ofApp() : oscThread(this) ,
-                 minimal(ofGetWidth(),ofGetHeight() ) ,
+                 minimal( ofGetWidth(), ofGetHeight() ) ,
                  humanoid(&kinect, minimal.getColorSourceFboPointer() ) ,
-                 abstract(&kinect, minimal.getColorSourceFboPointer() ) {
-}
+                 abstract(&kinect, minimal.getColorSourceFboPointer() )
+{}
 
 void ofApp::setup()
 {
@@ -38,8 +38,8 @@ void ofApp::setup()
     nWarp = post.createPass<NoiseWarpPass>();
     nWarp->setEnabled(true);
     
-    verTiltShift = post.createPass<VerticalTiltShifPass>();
-    verTiltShift->setEnabled(true);
+//    verTiltShift = post.createPass<VerticalTiltShifPass>();
+//    verTiltShift->setEnabled(true);
     
     pProVar[NOISE_AMP] = envelopeVariable(0.f, 0.04, 522.f);
     pProVar[N_AMP_MOD] = envelopeVariable(1, 1.5, 100.f);
@@ -49,12 +49,11 @@ void ofApp::setup()
     pProVar[RGB_SHIFT_AMT].setDirection( envelopeVariable::UP);
     pProVar[RGB_ANGLE] = envelopeVariable(0.001f, 0.1, 250);
     
-    pProVar[TILT_SHIFT] = envelopeVariable(0.0, 1.5, 500);
-    pProVar[TILT_SHIFT].setDirection( envelopeVariable::UP );
+//    pProVar[TILT_SHIFT] = envelopeVariable(0.0, 1.5, 500);
+//    pProVar[TILT_SHIFT].setDirection( envelopeVariable::UP );
     
     //Start osc thread last to avoid calling unInitalized functions
     oscThread.startThread(true);
-
 }
 
 //--------------------------------------------------------------
@@ -90,9 +89,7 @@ void ofApp::update()
     nWarp->setAmplitude( pProVar[NOISE_AMP].getValue() * pProVar[N_AMP_MOD].getValue() );
     rgbShift->setAmount( pProVar[RGB_SHIFT_AMT].getValue() );
     rgbShift->setAngle( pProVar[RGB_ANGLE].getValue() );
-    verTiltShift->setH( pProVar[TILT_SHIFT].getValue() );
-    
-    //    kScope->setSegments(ofMap(mouseX, 0, ofGetWidth(), 0, 50));
+//    verTiltShift->setH( pProVar[TILT_SHIFT].getValue() );
     
     switch ( currentScene )
     {
@@ -100,6 +97,8 @@ void ofApp::update()
             // Close other scenes working threads if running.
             if( abstract.isThreadRunning()) abstract.waitForThread();
             if( humanoid.isThreadRunning()) humanoid.waitForThread();
+            
+            minimal.fillFbo();
             
             break;
             
@@ -115,6 +114,7 @@ void ofApp::update()
                 if (!humanoid.isThreadRunning()) humanoid.startThread(true);
                 
                 humanoid.setNewFrame();
+
             }
             break;
             
@@ -129,7 +129,7 @@ void ofApp::update()
                 
                 // if abs ain't running, start it.
                 if (!abstract.isThreadRunning()) abstract.startThread(true);
-
+                
                 abstract.setNewFrame();
             }
             break;
@@ -144,8 +144,8 @@ void ofApp::update()
 }
 
 //--------------------------------------------------------------
-void ofApp::draw(){
-    
+void ofApp::draw()
+{
     // copy enable part of gl state
     glPushAttrib(GL_ENABLE_BIT);
     
@@ -166,6 +166,7 @@ void ofApp::draw(){
             
         case MINIMAL:
             minimal.draw();
+//            minimal.drawTwoDee();
             break;
             
         case HUMANOID:
@@ -253,9 +254,8 @@ void ofApp::oscBpmCallback(float dasBpm )
 //----------------User_Input--------------------------------------
 void ofApp::keyPressed(int key)
 {
-    
-    switch (key) {
-
+    switch (key)
+    {
             // open/close the kinect connection
 		case 'o':
         case 'O':
@@ -285,7 +285,6 @@ void ofApp::keyPressed(int key)
             //FakeDrumHit
         case 'd':
         case 'D':
-            pProVar[TILT_SHIFT].trigger();
             minimal.drumTriggers(9);
             break;
             
@@ -331,7 +330,7 @@ void ofApp::keyPressed(int key)
             break;
             
         case ' ':
-
+            
             break;
             
         } // switch

@@ -28,5 +28,5 @@ void Square::drawTwoDim()
 {
     ofSetColor(getColor());
 //    ofRect(getLocation().x, getLocation().y, getLocation().z, getSize(), getSize());
-    ofRect(getLocation().x, getLocation().y, getSize(), getSize());
+    ofRect(getLocation().x, getLocation().y, getSize() * sizeMulti, getSize() * sizeMulti);
 }

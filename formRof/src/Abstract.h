@@ -16,6 +16,7 @@ class Abstract : public MeshFunctions
 {
     
 public:
+    Abstract() {}
     Abstract( ofxKinect *nKinect, ofFbo* nFbo );
     ~Abstract();
     

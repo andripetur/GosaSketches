@@ -19,25 +19,20 @@ class MeshFunctions : public ofThread
 public: 
     MeshFunctions();
     
-    void kinectToMesh(int step);
-    void colorMesh();
-    
     ofMesh mesh,mesh2;
     ofxKinect *dasKinect;
     ofFbo * dasFbo;
     ofPixels colorSource;
     
-    float sinTable[LOOKUP_TABLE_SIZE];
-    int wondTable[LOOKUP_TABLE_SIZE];
-    
-    int howWondrous(int input);
-    void fillLookUpTables();
-    
     virtual void update() = 0;
-    
     void threadedFunction();
     
+    // Color Functions
+    void colorMesh();
+    void clearSourceToColor(ofColor bob);
+    
     //Fill functions
+    void kinectToMesh(int step);
     void fillGrid(int step);
     void fillLines();
     void fillAbstractGrid(bool bWhichMethod);
@@ -63,9 +58,15 @@ public:
     
     void flipKinectDrawing();
     
+    // Lookup table shiz
+    float sinTable[LOOKUP_TABLE_SIZE];
+    int wondTable[LOOKUP_TABLE_SIZE];
+    int howWondrous(int input);
+    void fillLookUpTables();
+    
+    // Gets and sets
     unsigned int getCurrentPreset();
     void virtual setPreset(unsigned int nPreset);
-    
     void setNewFrame();
     
     void initSphere();

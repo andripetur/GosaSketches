@@ -43,6 +43,7 @@ public:
     ofVec3f getLocation();
     ofColor getColor();
     
+    int sizeMulti = 6;
 private:
     float size;
     float initSize;

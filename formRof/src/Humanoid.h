@@ -18,6 +18,7 @@ class Humanoid : public MeshFunctions
     
 public:
     
+    Humanoid() {}
     Humanoid(ofxKinect *nKinect, ofFbo* nFbo);
     ~Humanoid();
     

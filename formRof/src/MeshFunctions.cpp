@@ -26,7 +26,7 @@ void MeshFunctions::threadedFunction()
         }
         else
         {
-            sleep( (1000.0/ofGetFrameRate())*0.5);
+            sleep( (1000.0/ofGetFrameRate())*0.5 );
         }
     }
     
@@ -35,9 +35,21 @@ void MeshFunctions::threadedFunction()
 //-------------------------------- Color Functions
 void MeshFunctions::colorMesh()
 {
-    for ( int i = 0; i < mesh.getNumIndices(); ++i)
+    ofVec3f v;
+    for ( int i = 0; i < mesh.getNumVertices(); ++i)
     {
-        mesh.addColor(colorSource.getColor(i/colorSource.getWidth(), i/colorSource.getHeight()));
+        v = mesh.getVertex(i);
+        mesh.addColor(colorSource.getColor( abs((int)v.x) % colorSource.getWidth(), abs((int)v.y) % colorSource.getHeight()) );
+    }
+}
+
+void MeshFunctions::clearSourceToColor(ofColor bob)
+{
+    int numPix = colorSource.getWidth()*colorSource.getHeight();
+    
+    for ( int i = 0; i < numPix; ++i)
+    {
+        colorSource.setColor(i, bob);
     }
 }
 
@@ -371,7 +383,9 @@ void MeshFunctions::drawGrid()
     glLineWidth(3);
 //    ofEnableDepthTest();
     
-    flipKinectDrawing();
+//    flipKinectDrawing();
+    ofScale(1, -1, 1);
+    ofTranslate(0, 0, -1000);
     
     mesh.draw();
     
@@ -406,7 +420,7 @@ void MeshFunctions::drawBoxes()
     for ( int a=0; a < numVerts; ++a )
     {
         float biggerMaker = (((mesh.getVertex(a).z*-1)+1000)*0.01);
-//        ofSetColor(mesh.getColor(a));
+        ofSetColor(mesh.getColor(a));
         ofDrawBox(mesh.getVertex(a), 5, 5, (((mesh.getVertex(a).z*-1)+1000)*0.5) );
         
     }
@@ -456,7 +470,7 @@ void MeshFunctions::drawHumanDistortion(bool bPointsOrLines)
     
 	// the projected points are 'upside down' and 'backwards'
 	ofScale(1, -1, -1);
-	ofTranslate(0, 0, -1000); // center the points a bit
+//	ofTranslate(0, 0, -1000); // center the points a bit
     
     float size  = mesh.getNumIndices()*0.001;
     glPointSize(size); // 3

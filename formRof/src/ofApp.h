@@ -70,7 +70,5 @@ public:
     enum pProcVariables
     {NOISE_AMP = 0, N_AMP_MOD, RGB_SHIFT_AMT, RGB_ANGLE, TILT_SHIFT, NR_P_PROC_VAR};
     envelopeVariable pProVar[NR_P_PROC_VAR];
-    
-
-    		
+        		
 };

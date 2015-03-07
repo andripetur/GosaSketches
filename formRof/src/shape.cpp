@@ -22,7 +22,6 @@ void Shape::update()
         theta += spinSpeed;
     }
     
-     
     checkEdges();
 }
 
@@ -51,53 +50,33 @@ void Shape::randomDirection()
 
 // ------------------------ Setters
 void Shape::setLocation(ofVec3f nLocation)
-{
-    location = nLocation;
-}
+{ location = nLocation; }
 
 void Shape::setDirection(ofVec3f nDirection)
-{
-    direction = nDirection;
-}
+{ direction = nDirection; }
 
-void Shape::setSize(float nSize) {
-    
-    size = nSize;
-}
+void Shape::setSize(float nSize)
+{ size = nSize; }
 
 void Shape::setInitSize(float nInitSize)
-{
-    initSize = nInitSize;
-    size = initSize; 
-}
+{ initSize = nInitSize;
+  size = initSize; }
 
 void Shape::setColor(ofColor nColor )
-{
-    color = nColor;
-}
+{ color = nColor; }
 
 void Shape::setRotateOn(bool nBool)
-{
-    rotateOn = nBool;
-}
+{ rotateOn = nBool; }
 
 // ------------------------Getters
 ofVec3f Shape::getLocation()
-{
-    return location;
-}
+{ return location; }
 
 float Shape::getSize()
-{
-    return size;
-}
+{ return size; }
 
 float Shape::getTheta()
-{
-    return theta;
-}
+{ return theta; }
 
 ofColor Shape::getColor()
-{
-    return color; 
-}
+{ return color; }

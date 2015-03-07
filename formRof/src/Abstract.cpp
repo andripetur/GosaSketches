@@ -29,6 +29,7 @@ Abstract::~Abstract()
 void Abstract::update()
 {
     mesh.clear();
+    clearSourceToColor(ofColor(255,255,255));
     
     switch ( getCurrentPreset() )
     {
@@ -94,6 +95,10 @@ void Abstract::update()
 void Abstract::draw()
 {
     lock();
+    
+    dasFbo->readToPixels(colorSource);
+    colorMesh();
+    
     switch ( getCurrentPreset() )
     {
         case AB_GRID_ONE:

@@ -24,7 +24,7 @@ void Triangle::drawTwoDim()
     ofPushMatrix();
     {
         ofTranslate(getLocation().x, getLocation().y);
-        ofScale(getSize(),getSize());
+        ofScale(getSize() * sizeMulti ,getSize() * sizeMulti);
         
         ofBeginShape();
             ofVertex(0,0);
@@ -33,7 +33,6 @@ void Triangle::drawTwoDim()
         ofEndShape();
     }
     ofPopMatrix();
-    
 }
 
 void Triangle::drawThreeDim()

@@ -55,17 +55,17 @@ void Minimal::drumTriggers(int which)
     {
         case KICK:
             
-            hringur.setSize(growToSize);
+//            hringur.setSize(growToSize);
             break;
             
         case SNARE:
             
-            kassi.setSize(growToSize*2);
+//            kassi.setSize(growToSize*2);
             break;
             
         case HH:
             
-            thrihorn.setSize(growToSize);
+//            thrihorn.setSize(growToSize);
             break;
             
         case PERC:
@@ -94,11 +94,6 @@ void Minimal::drumTriggers(int which)
     
 }// drumTriggers
 
-void Minimal::setReductionSpeed(float nSpeed)
-{
-    reductionSpeed = nSpeed;
-}
-
 void Minimal::update()
 {
     hringur.update();
@@ -119,5 +114,10 @@ void Minimal::draw() {
     
     thrihorn.drawThreeDim();
     
+}
+
+void Minimal::drawTwoDee()
+{
+    colorSource.draw(0, 0);
 }
 

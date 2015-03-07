@@ -14,12 +14,10 @@ Circle::Circle()
     setInitSize(INIT_SIZE);
 }
 
-
-
 void Circle::drawTwoDim()
 {
     ofSetColor(getColor());
-    ofEllipse( getLocation().x, getLocation().y, getSize(), getSize() );
+    ofEllipse( getLocation().x, getLocation().y, getSize()*sizeMulti, getSize()*2 );
 }
 
 void Circle::drawThreeDim()
