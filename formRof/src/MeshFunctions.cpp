@@ -414,6 +414,8 @@ void MeshFunctions::connectHumanDistortion()
 void MeshFunctions::drawPoints()
 {
     glPointSize(5);
+    flipKinectDrawing();
+    
     mesh.setMode(OF_PRIMITIVE_POINTS);
     mesh.drawVertices();
 }
@@ -496,7 +498,7 @@ void MeshFunctions::drawBlobs()
 	ofPopMatrix();
 }
 
-void MeshFunctions::drawHumanDistortion(bool bPointsOrLines)
+void MeshFunctions::drawHumanDistortion(bool bPointsOrLines, bool bMotionOrStill)
 {
     ofPushMatrix();
     
@@ -511,9 +513,21 @@ void MeshFunctions::drawHumanDistortion(bool bPointsOrLines)
     
 	// the projected points are 'upside down' and 'backwards'
 	ofScale(1, -1, -1);
-//	ofTranslate(0, 0, -1000); // center the points a bit
+	ofTranslate(0, 0, -1000); // center the points a bit
     
-    float size  = mesh.getNumIndices()*0.001;
+    float size;
+    if ( bMotionOrStill )
+    {
+        size  = ((mesh.getNumIndices()*-1)+20000)*0.001;
+        
+        // Clip point/line size at 2.
+        if (size < 2.0) size = 2;
+    }
+    else
+    {
+        size = 19.25;
+    }
+    
     glPointSize(size); // 3
     glLineWidth(size);
     mesh.draw();
@@ -540,6 +554,9 @@ void MeshFunctions::drawGrowingHumanoid(bool bPointsOrLines)
 	ofTranslate(0, 0, -1000); // center the points a bit
     
     float size  = ((mesh.getNumVertices()*-1.0)+3500)*0.01;
+    
+    // Clip size at 2.
+    if (size < 2.0) size = 2;
     glPointSize(size); // 3
     glLineWidth(size);
     mesh.draw();
@@ -593,7 +610,6 @@ void MeshFunctions::fillLookUpTables()
 }
 
 //-----------------------------------------GettersAndSetters
-
 unsigned int MeshFunctions::getCurrentPreset()
 {
     return preset;
@@ -620,13 +636,14 @@ void MeshFunctions::setNewFrame()
 void MeshFunctions::initSphere()
 {
     sphere.set(dasKinect->getWidth()*0.4, 40);
-    sphere.setPosition(ofVec3f(ofGetWidth()*0.5,ofGetHeight()*0.5, -1000*sin(0) ));
+    sphere.setPosition(ofVec3f(ofGetWidth()*0.5,ofGetHeight()*0.5, 0 ));
 }
 
 void MeshFunctions::initCone()
 {
     int res = 50;
-    cone.setPosition(ofVec3f(ofGetWidth()*0.5,ofGetHeight()*0.5, -1000));
+//    cone.setPosition(ofVec3f(ofGetWidth()*0.5,ofGetHeight()*0.5, -1000));
+     cone.setPosition(ofVec3f(ofGetWidth()*0.5,ofGetHeight()*0.5, 0));
     cone.setResolution(res, res, res);
     cone.set(dasKinect->getWidth()*0.5, dasKinect->getHeight()*2);
 }

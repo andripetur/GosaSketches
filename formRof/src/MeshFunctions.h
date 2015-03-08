@@ -54,7 +54,7 @@ public:
     void drawBoxes(); // kinectBoxes
     void drawTriangles(); // kinectAbsttract verður betra með litum.
     void drawBlobs(); // spherMorphblob
-    void drawHumanDistortion(bool bPointsOrLines);
+    void drawHumanDistortion(bool bPointsOrLines, bool bMorStill);
     void drawGrowingHumanoid(bool bPointsOrLines);
     
     void flipKinectDrawing();

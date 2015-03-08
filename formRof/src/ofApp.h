@@ -9,6 +9,7 @@
 #include "Abstract.h"
 #include "envelopeVariable.h"
 #include "Timer.h"
+#include "WorldSpinner.h"
 
 enum drumTriggers {KICK = 0, SNARE, HH, PERC, COW};
 enum sceneNames {MINIMAL = 0, HUMANOID, ABSTRACT};
@@ -51,10 +52,11 @@ public:
     
 // Cam stuff
     ofEasyCam cam;
+    WorldSpinner wSpin;
 
 // After effects.
     ofxPostProcessing post;
-    ofLight light;
+    ofLight light,oppLight;
 
     KaleidoscopePass::Ptr kScope;
     BloomPass::Ptr bloom;
@@ -78,7 +80,7 @@ public:
     
     enum noteLengths {_1n, _2n, _4n, _8n, _16n, _32n, NR_NVALUES};
     float nVal[NR_NVALUES];
-    
+// Timer
     Timer sceneTimer;
     void checkTimer(); 
         		

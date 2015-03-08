@@ -127,13 +127,19 @@ void Abstract::draw()
             break;
             
         case HUMAN_DISTORTION_DOTS:
+            drawHumanDistortion(true, true);
+            break;
+            
         case HUMAN_DISTORTION_AU_DOTS:
-            drawHumanDistortion(true);
+            drawHumanDistortion(true, false);
             break;
             
         case HUMAN_DISTORTION_LINES:
+            drawHumanDistortion(false, true);
+            break;
+        
         case HUMAN_DISTORTION_AU_LINES:
-            drawHumanDistortion(false);
+            drawHumanDistortion(false, false);
             break;
             
             

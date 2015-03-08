@@ -22,7 +22,10 @@ void ofApp::setup()
     
     // Setup light
 	light.setPosition(1000, 1000, 2000);
+    oppLight.setPosition(-1000, -1000, -2000);
     light.enable();
+    oppLight.setDirectional();
+    oppLight.enable();
     
     setupPostProccessing();
     
@@ -111,19 +114,20 @@ void ofApp::update()
         pProVar[i].update();
     }
     
+    wSpin.update();
+    
     nWarp->setAmplitude( pProVar[NOISE_AMP].getValue() * pProVar[N_AMP_MOD].getValue() );
     rgbShift->setAmount( pProVar[RGB_SHIFT_AMT].getValue() );
     rgbShift->setAngle( pProVar[RGB_ANGLE].getValue() );
 //    verTiltShift->setH( pProVar[TILT_SHIFT].getValue() );
     
+    // Update current scene
     switch ( currentScene )
     {
         case MINIMAL:
             // Close other scenes working threads if running.
             if( abstract.isThreadRunning()) abstract.waitForThread();
             if( humanoid.isThreadRunning()) humanoid.waitForThread();
-            
-//            minimal.fillFbo();            
             break;
             
         case HUMANOID:
@@ -165,6 +169,7 @@ void ofApp::update()
     {
         ofSetWindowTitle(ofToString(ofGetFrameRate()));
     }
+
     
 }
 
@@ -178,19 +183,23 @@ void ofApp::draw()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     
-    post.begin(cam);
+    if (currentScene == MINIMAL) {
+        post.begin();
+    } else {
+        post.begin(cam);
+        wSpin.spinWorld();
+    }
     
     if(bAlpha) {
         ofBackground(0, 0, 0, 100);
     } else {
         ofBackground(0, 0, 0, 250);
     }
-
+    
     switch ( currentScene )
     {
         case MINIMAL:
             minimal.draw();
-//            minimal.drawTwoDee();
             break;
             
         case HUMANOID:
@@ -209,8 +218,7 @@ void ofApp::draw()
     // set gl state back to original
     glPopAttrib();
     
-    
-    // If of is fullscreen draw framerate in bottom left corner.
+    // If app is fullscreen draw framerate in bottom left corner.
     if ( ofGetWindowMode() == OF_FULLSCREEN) {
         ofSetColor(255, 255 ,255);
         ofDrawBitmapString(ofToString(ofGetFrameRate()), ofPoint(20, ofGetHeight() - 20));
@@ -245,8 +253,7 @@ void ofApp::oscDrTriggerCallBack(int which)
         case COW:
             
             break;
-    }
-    
+    } // switch
 }
 
 // ---------------- Scene chooser.
@@ -296,8 +303,7 @@ void ofApp::calcNoteLengths()
     {
         nVal[i] = nVal[i-1] * 0.5;
     }
-    
-    
+
 }
 
 void ofApp::checkTimer()
@@ -378,7 +384,6 @@ void ofApp::keyPressed(int key)
             {
                 abstract.setPreset( abstract.getCurrentPreset() - 1 );
             }
-            
             break;
             
         case OF_KEY_RIGHT:
@@ -392,12 +397,20 @@ void ofApp::keyPressed(int key)
             }
             break;
             
+            // Turn alpha on/off.
         case 'a':
+        case 'A':
             bAlpha = !bAlpha;
             break;
             
-        case ' ':
+            // Trigger a spin
+        case 's':
+        case 'S':
+            wSpin.trigger();
+            break;
             
+            // Trigger a preset change
+        case ' ':
             if ( currentScene == HUMANOID )
             {
                 humanoid.changePreset();
