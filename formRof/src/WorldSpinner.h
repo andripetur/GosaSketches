@@ -22,13 +22,14 @@ public:
     void spinWorld();
     
 private:
-    struct spinVariables
+    class spinVariables
     {
-        float rotate = 0;
-        float speed = ofRandom(0.3, 0.9);
-        int direction;
+    public:
+        float rotate = 0.f;
+        float speed = (floor(ofRandom(3, 9)) * 0.1 );
+        int direction = 1;
         bool bIsSpinning = false;
-        float spinDestination;
+        float spinDestination = 0.f;
     };
     
     spinVariables x, y;

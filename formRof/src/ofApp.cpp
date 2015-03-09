@@ -9,7 +9,7 @@ ofApp::ofApp() : oscThread(this) ,
 void ofApp::setup()
 {
     ofSetFrameRate(33);
-    setupKinect();
+    //setupKinect();
     
     // start from minimal scene.
     currentScene = MINIMAL;
@@ -189,7 +189,7 @@ void ofApp::draw()
         post.begin(cam);
         wSpin.spinWorld();
     }
-    
+
     if(bAlpha) {
         ofBackground(0, 0, 0, 100);
     } else {
@@ -235,6 +235,8 @@ void ofApp::oscDrTriggerCallBack(int which)
     {
         case KICK:
             pProVar[NOISE_AMP].trigger();
+            
+            //Check preset change timer
             checkTimer();
             break;
             
@@ -289,7 +291,7 @@ void ofApp::oscBpmCallback(float dasBpm )
 {
     if (dasBpm != currentBpm)
     {
-        dasBpm = currentBpm;
+        currentBpm = dasBpm;
         calcNoteLengths();
     }
 }
@@ -355,12 +357,6 @@ void ofApp::keyPressed(int key)
 			kinect.setCameraTiltAngle(kinectAngle);
 			break;
             
-            //FakeDrumHit
-        case 'd':
-        case 'D':
-            minimal.drumTriggers(9);
-            break;
-            
             // Select Scenes
         case '1':
             currentScene = MINIMAL;
@@ -407,6 +403,12 @@ void ofApp::keyPressed(int key)
         case 's':
         case 'S':
             wSpin.trigger();
+            break;
+            
+            //FakeDrumHit
+        case 'd':
+        case 'D':
+            minimal.drumTriggers(9);
             break;
             
             // Trigger a preset change

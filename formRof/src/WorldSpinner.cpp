@@ -15,11 +15,13 @@ void WorldSpinner::update()
 {
     if (y.bIsSpinning)
     {
+//        cout << "updating y" << endl;
         updateVar(&y);
     }
     
     if (x.bIsSpinning)
     {
+//        cout << "updating x" << endl;
         updateVar(&x);
     }
 }
@@ -27,31 +29,37 @@ void WorldSpinner::update()
 void WorldSpinner::trigger()
 {
     float rN = ofRandom(1.0);
-    if ( rN < 0.5)
+    
+    if ( rN <= 0.5)
     {
-        x.bIsSpinning = true;
         y.bIsSpinning = false;
+        
         newDirection(&x);
         newDestination(&x);
+        x.bIsSpinning = true;
     }
     else
     {
-        y.bIsSpinning = true;
+        
         x.bIsSpinning = false;
+        
         newDirection(&y);
         newDestination(&y);
+        y.bIsSpinning = true;
     }
 }
 
 void WorldSpinner::newDestination(spinVariables * var)
 {
  
-    float rN = ofRandom(45, 90);
+    int rN = ofRandom(45.f, 90.f);
+    var->spinDestination = 0.f;
     
     spinVariables pOrM;
     newDirection(&pOrM);
     
-    var->spinDestination = fabs(fmod(var->rotate + ( rN )*pOrM.direction, 360));
+    var->spinDestination = fmod( fabs(var->rotate + ( rN * pOrM.direction )), 360.f);
+    if( fabs(var->spinDestination - var->rotate) < 3.f ) newDestination(var);
     
 
 }
@@ -73,30 +81,35 @@ void WorldSpinner::newDirection(spinVariables *var)
 void WorldSpinner::updateVar(spinVariables *var)
 {
     // Update them variables
-    var->rotate += (var->speed * var->direction);
-    var->rotate = fabs( fmod(var->rotate, 360) );
+    var->rotate += (var->speed * (float)var->direction);
+    var->rotate =  fmod( var->rotate, 360 );
+    
+//    cout << "rotate: " << var->rotate << endl;
+//    cout << "destination: " << var->spinDestination << endl;
+//    cout << "speed: " << var->speed << endl;
     
     // Check if spin has reached it destination.
-    if ( fabs(var->rotate - var->spinDestination) < 3.0)
+    if ( round(var->rotate) == round(var->spinDestination) )
     {
         var->bIsSpinning = false;
+        var->rotate = round(var->spinDestination);
     }
 
 }
 
 void WorldSpinner::spinWorld()
 {
-    int yTrans = ofMap(y.rotate, 0.f, 360.f, ofGetHeight()*0.5, 0.f);
-    int xTrans = ofMap(x.rotate, 0.f, 360.f, ofGetWidth()*0.5, 0.f);
+    float yTrans = ofMap(y.rotate, 0.f, 360.f, ofGetHeight()*0.5f, 0.f);
+    float xTrans = ofMap(x.rotate, 0.f, 360.f, ofGetWidth()*0.5f, 0.f);
     
-    ofTranslate(0, yTrans, 0);
-    {
+    ofTranslate(0, yTrans);
         ofRotateY( y.rotate );
         
         ofTranslate(xTrans, 0);
             ofRotateX( x.rotate );
         ofTranslate(-xTrans, 0);
-    }
-    ofTranslate(0, -yTrans, 0);
+    
+    ofTranslate(0, -yTrans);
+    
 }
 
