@@ -8,17 +8,18 @@ ofApp::ofApp() : oscThread(this) ,
 
 void ofApp::setup()
 {
-    ofSetFrameRate(33);
-    //setupKinect();
+    ofSetFrameRate(35);
+    setupKinect();
     
     // start from minimal scene.
     currentScene = MINIMAL;
     currentBpm = 120;
+    energy = 0.01;
     calcNoteLengths();
     
     sceneTimer.setLength( nVal[_1n]*4 );
     
-    cam.enableMouseInput();
+//    cam.enableMouseInput();
     
     // Setup light
 	light.setPosition(1000, 1000, 2000);
@@ -57,20 +58,17 @@ void ofApp::setupPostProccessing()
     
     post.createPass<FxaaPass>()->setEnabled(true);
     
-    //    kScope = post.createPass<KaleidoscopePass>();
-    //    kScope->setEnabled(true);
+    kScope = post.createPass<KaleidoscopePass>();
+    kScope->setEnabled(false);
     
     rgbShift = post.createPass<RGBShiftPass>();
-    rgbShift->setEnabled(true);
+    rgbShift->setEnabled(false);
     
     bloom = post.createPass<BloomPass>();
     bloom->setEnabled(true);
     
     nWarp = post.createPass<NoiseWarpPass>();
     nWarp->setEnabled(true);
-    
-    //    verTiltShift = post.createPass<VerticalTiltShifPass>();
-    //    verTiltShift->setEnabled(true);
     
     pProVar[NOISE_AMP] = envelopeVariable(0.f, 0.04, 522.f);
     pProVar[N_AMP_MOD] = envelopeVariable(1, 1.5, 100.f);
@@ -79,9 +77,7 @@ void ofApp::setupPostProccessing()
     pProVar[RGB_SHIFT_AMT] = envelopeVariable(0.001f, 0.1, 1000.f);
     pProVar[RGB_SHIFT_AMT].setDirection( envelopeVariable::UP);
     pProVar[RGB_ANGLE] = envelopeVariable(0.001f, 0.1, 250);
-    
-    //    pProVar[TILT_SHIFT] = envelopeVariable(0.0, 1.5, 500);
-    //    pProVar[TILT_SHIFT].setDirection( envelopeVariable::UP );
+
 }
 
 //--------------------------------------------------------------
@@ -106,20 +102,19 @@ void ofApp::update()
     kinect.update();
     
     minimal.update();
-    minimal.update();
     
     // Update all envelopes
-    for (int i = 0; i < NR_P_PROC_VAR; ++i)
-    {
+    for (int i = 0; i < NR_P_PROC_VAR; ++i) {
         pProVar[i].update();
     }
     
+    // Update world spin 
     wSpin.update();
     
-    nWarp->setAmplitude( pProVar[NOISE_AMP].getValue() * pProVar[N_AMP_MOD].getValue() );
+    // energy mapped to noisewarp amount. 
+    nWarp->setAmplitude( ( pProVar[NOISE_AMP].getValue() * pProVar[N_AMP_MOD].getValue() ) * energy );
     rgbShift->setAmount( pProVar[RGB_SHIFT_AMT].getValue() );
     rgbShift->setAngle( pProVar[RGB_ANGLE].getValue() );
-//    verTiltShift->setH( pProVar[TILT_SHIFT].getValue() );
     
     // Update current scene
     switch ( currentScene )
@@ -133,8 +128,10 @@ void ofApp::update()
         case HUMANOID:
             if(kinect.isFrameNew())
             {
+                // Draw background shape pixels.
                 minimal.fillFbo();
-                sceneTimer.setLength( nVal[_1n]*4 );
+                // Set length of Timer
+                sceneTimer.setLength( nVal[_1n]*8+(int(ofRandomf()*2)) );
                 
                 // If abs is running, close it.
                 if(abstract.isThreadRunning()) abstract.waitForThread();
@@ -142,6 +139,7 @@ void ofApp::update()
                 // if hum isn't running start it.
                 if (!humanoid.isThreadRunning()) humanoid.startThread(true);
                 
+                // Notify scene that there is new frame.
                 humanoid.setNewFrame();
             }
             break;
@@ -150,8 +148,10 @@ void ofApp::update()
             
             if(kinect.isFrameNew())
             {
+                // Draw background shape pixels.
                 minimal.fillFbo();
-                sceneTimer.setLength( nVal[_1n] * 2 );
+                // Set length of Timer
+                sceneTimer.setLength( nVal[_1n] * 4+(int(ofRandomf()*2)) );
                 
                 // if hum is running, close it.
                 if(humanoid.isThreadRunning()) humanoid.waitForThread();
@@ -159,17 +159,11 @@ void ofApp::update()
                 // if abs ain't running, start it.
                 if (!abstract.isThreadRunning()) abstract.startThread(true);
                 
+                // Notify scene that there is new frame.
                 abstract.setNewFrame();
             }
             break;
     }
-    
-    //Set fps as window title, if of is not fullscreen. 
-    if ( ofGetWindowMode() != OF_FULLSCREEN )
-    {
-        ofSetWindowTitle(ofToString(ofGetFrameRate()));
-    }
-
     
 }
 
@@ -191,11 +185,14 @@ void ofApp::draw()
     }
 
     if(bAlpha) {
-        ofBackground(0, 0, 0, 100);
+//        ofBackground(0, 0, 0, 100);
+        // Map energy amount to alpha color. More intensity lower alpha.
+        ofBackground(0, 0, 0, ((energy * -1.f) + 1.f) * 200  );
     } else {
-        ofBackground(0, 0, 0, 250);
+        ofBackground(0, 0, 0, 255);
     }
     
+    // Draw current scene
     switch ( currentScene )
     {
         case MINIMAL:
@@ -218,10 +215,38 @@ void ofApp::draw()
     // set gl state back to original
     glPopAttrib();
     
-    // If app is fullscreen draw framerate in bottom left corner.
-    if ( ofGetWindowMode() == OF_FULLSCREEN) {
+    // Draw info to bottomleft corner of the screen
+    if ( bShowInfo )
+    {
+        ofPoint pNameLoc = ofPoint(100, ofGetHeight() - 40);
+        ofPoint sNameLoc = ofPoint(20, ofGetHeight() - 40);
+        
         ofSetColor(255, 255 ,255);
-        ofDrawBitmapString(ofToString(ofGetFrameRate()), ofPoint(20, ofGetHeight() - 20));
+        
+        // scene and preset names
+        switch (currentScene)
+        {
+            case MINIMAL:
+                ofDrawBitmapString("Minimal", sNameLoc);
+                break;
+                
+            case HUMANOID:
+                ofDrawBitmapString("Humanoid", sNameLoc);
+                abstract.lock();
+                    ofDrawBitmapString( humanoid.getCurrentPresetName(), pNameLoc);
+                abstract.unlock();
+                break;
+            
+            case ABSTRACT:
+                ofDrawBitmapString("Abstract", sNameLoc);
+                humanoid.lock();
+                    ofDrawBitmapString( abstract.getCurrentPresetName(), pNameLoc);
+                humanoid.unlock();
+                break;
+        }
+ 
+        // framerate
+        ofDrawBitmapString( ofToString(ofGetFrameRate()), ofPoint(20, ofGetHeight() - 20));
     }
     
 }
@@ -229,8 +254,10 @@ void ofApp::draw()
 //----------------Osc_Callback_funtions--------------------------
 void ofApp::oscDrTriggerCallBack(int which)
 {
+    // Pass drum triggers on to minimal.
     minimal.drumTriggers(which);
     
+    // Triggers
     switch (which)
     {
         case KICK:
@@ -245,7 +272,33 @@ void ofApp::oscDrTriggerCallBack(int which)
             break;
             
         case HH:
+        {
             pProVar[N_AMP_MOD].trigger();
+            
+            float rn = ofRandom(1);
+            
+            // If abstract is running throw some kaledeiscope in there
+            if(currentScene == ABSTRACT)
+            {
+                if ( (hhCount & 1) != 0 )
+                {
+                    if (rn < 0.5)
+                    {
+                        kScope->setEnabled(!kScope->getEnabled());
+                    }
+                }
+            }
+            
+            if ( (hhCount & 1) == 0 )
+            {
+                if (rn < 0.5)
+                {
+                    wSpin.trigger();
+                }
+            }
+            
+            ++hhCount;
+        }
             break;
             
         case PERC:
@@ -280,11 +333,12 @@ void ofApp::oscEnergyCallback(float dasEnergy)
     // 1 second turn alpha down.
     if (lastScene != currentScene )
     {
-        if (sceneTimer.getTimeToNextDing() < 1000)
+        if (sceneTimer.getTimeToNextDing() < nVal[_32n] )
         {
             bAlpha = true;
         }
     }
+    energy = dasEnergy;
 }
 
 void ofApp::oscBpmCallback(float dasBpm )
@@ -411,6 +465,11 @@ void ofApp::keyPressed(int key)
             minimal.drumTriggers(9);
             break;
             
+        case 'i':
+        case 'I':
+            bShowInfo = !bShowInfo; 
+            break;
+            
             // Trigger a preset change
         case ' ':
             if ( currentScene == HUMANOID )
@@ -426,13 +485,3 @@ void ofApp::keyPressed(int key)
         } // switch
 
 } // keyPressed
-
-//--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::windowResized(int w, int h){
-
-}

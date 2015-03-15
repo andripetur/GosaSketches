@@ -21,7 +21,14 @@ Minimal::Minimal(int width, int height) {
     colorMatcher.generateComplementaryTriad();
     
     nrDrumHits = 0;
+    nrKickHits = 0;
     colorSwitchTrigger = 10;
+    
+    drmVar[kickSpeed] = envelopeVariable(1.f, 3.f, 750);
+    drmVar[kickSpeed].setSlope( envelopeVariable::COSINE );
+    
+    drmVar[snareSpeed] = envelopeVariable(1, 2, 1000 );
+    drmVar[snareSpeed].setSlope( envelopeVariable::COSINE );
     
 }
 
@@ -54,18 +61,24 @@ void Minimal::drumTriggers(int which)
     switch (which)
     {
         case KICK:
+            drmVar[kickSpeed].trigger();
             
-//            hringur.setSize(growToSize);
+            if ( nrKickHits % 3 == 0)
+            {
+                hringur.randomDirection();
+            }
+            
+            ++nrKickHits;
             break;
             
         case SNARE:
             
-//            kassi.setSize(growToSize*2);
+            drmVar[snareSpeed].trigger();
+            kassi.randomDirection();
             break;
             
         case HH:
             
-//            thrihorn.setSize(growToSize);
             break;
             
         case PERC:
@@ -77,7 +90,7 @@ void Minimal::drumTriggers(int which)
             break;
     }
     
-    nrDrumHits++;
+    ++nrDrumHits;
     
     // Set new base color from the pallette every X hits.
     if ( (nrDrumHits % colorSwitchTrigger ) == 0 )
@@ -96,10 +109,20 @@ void Minimal::drumTriggers(int which)
 
 void Minimal::update()
 {
+    // Update envelopes
+    for (int i = 0; i < nrOfDrmVar; ++i){
+        drmVar[i].update();
+    }
+    
+    hringur.setSpeed( drmVar[kickSpeed].getValue() );
+    kassi.setSpeed( drmVar[snareSpeed].getValue() );
+    
+    // update shapes
     hringur.update();
     kassi.update();
     thrihorn.update();
     
+    // set colors
     hringur.setColor(colorMatcher[0]);
     kassi.setColor(colorMatcher[1]);
     thrihorn.setColor(colorMatcher[2]);

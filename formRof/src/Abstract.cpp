@@ -155,3 +155,38 @@ void Abstract::setPreset(int nPreset)
         MeshFunctions::setPreset( nPreset );
     }
 }
+
+string Abstract::getCurrentPresetName()
+{
+    switch ( getCurrentPreset() )
+    {
+        case AB_GRID_ONE:
+            return "AB_GRID_ONE ";
+        case AB_GRID_TWO:
+            return "AB_GRID_TWO";
+        case TRIANGLES_ONE:
+            return "TRIANGLES_ONE ";
+        case TRIANGLES_TWO:
+            return "TRIANGLES_TWO ";
+        case SPHERE_MORPH_DOTS:
+            return "SPHERE_MORPH_DOTS ";
+        case SPHERE_MORPH_BLOBS:
+            return "SPHERE_MORPH_BLOBS ";
+        case SPHERE_MORPH_LINE_STRIPS:
+            return "SPHERE_MORPH_LINE_STRIPS ";
+        case CONE_MORPH_DOTS:
+            return "CONE_MORPH_DOTS ";
+        case CONE_MORPH_BLOBS:
+            return "CONE_MORPH_BLOBS ";
+        case CONE_MORPH_LINE_STRIPS:
+            return "CONE_MORPH_LINE_STRIPS ";
+        case HUMAN_DISTORTION_DOTS:
+            return "HUMAN_DISTORTION_DOTS ";
+        case HUMAN_DISTORTION_LINES:
+            return "HUMAN_DISTORTION_LINES ";
+        case HUMAN_DISTORTION_AU_DOTS:
+            return "HUMAN_DISTORTION_AU_DOTS ";
+        case HUMAN_DISTORTION_AU_LINES:
+            return "HUMAN_DISTORTION_AU_LINES ";
+    }
+}

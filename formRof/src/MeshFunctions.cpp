@@ -580,7 +580,7 @@ int MeshFunctions::howWondrous(int input)
     while (input != 1)
     {
         // if number is even :
-        if ( input % 2 == 0 )
+        if ( (input & 1) == 0 )
         {
             input *= 0.5;
             

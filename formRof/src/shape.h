@@ -33,6 +33,7 @@ public:
     void setInitSize(float nInitSize);
     void setLocation(ofVec3f nLocation);
     void setDirection(ofVec3f nDirection);
+    void setSpeed(float speed);
     
     void setColor(ofColor nColor);
     void setRotateOn(bool nBool);
@@ -47,11 +48,12 @@ public:
 private:
     float size;
     float initSize;
-    float shrinker = 1;
     
     bool rotateOn = true;
     float theta = 0;
     float spinSpeed = 0.5;
+    
+    float speed = 1;
     
     ofColor color;
     

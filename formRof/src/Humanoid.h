@@ -26,6 +26,7 @@ public:
     void draw();
     
     void setPreset(int nPreset);
+    string getCurrentPresetName();
 
 private:
     enum HumanoidPresets

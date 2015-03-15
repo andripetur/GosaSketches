@@ -15,7 +15,7 @@ Shape::~Shape() {}
 
 void Shape::update()
 {
-    location += direction;
+    location += direction * speed;
     
     if (rotateOn)
     {
@@ -45,7 +45,7 @@ void Shape::checkEdges()
 
 void Shape::randomDirection()
 {
-    direction = ofVec3f ( ofRandom(-1.,1), ofRandom(-1.,1), ofRandom(-1.,1)); 
+    direction = ofVec3f ( ofRandom(-2.,2), ofRandom(-2.,2), ofRandom(-2.,2));
 }
 
 // ------------------------ Setters
@@ -67,6 +67,9 @@ void Shape::setColor(ofColor nColor )
 
 void Shape::setRotateOn(bool nBool)
 { rotateOn = nBool; }
+
+void Shape::setSpeed(float speed)
+{ this->speed = speed; }
 
 // ------------------------Getters
 ofVec3f Shape::getLocation()

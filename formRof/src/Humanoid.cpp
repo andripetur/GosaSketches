@@ -123,3 +123,26 @@ void Humanoid::setPreset(int nPreset)
     }
 }
 
+string Humanoid::getCurrentPresetName()
+{
+    switch ( getCurrentPreset() )
+    {
+        case PLAIN_POINTS:
+            return "PLAIN_POINTS";
+        case GROW_POINTS:
+            return "GROW_POINTS";
+        case GROW_LINES:
+            return "GROW_LINES";
+        case GRID:
+            return "GRID";
+        case LINES_ONE:
+            return "LINES_ONE";
+        case LINES_TWO:
+            return "LINES_TWO";
+        case BOXES:
+            return "BOXES";
+        case BOXES_TWO:
+            return "BOXES_TWO";
+    }
+}
+

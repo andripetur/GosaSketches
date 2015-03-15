@@ -12,6 +12,7 @@
 #define __formRof__minimal__
 
 #include "ofxColorPalette.h"
+#include "envelopeVariable.h"
 #include "circle.h"
 #include "Triangle.h"
 #include "Square.h"
@@ -41,12 +42,20 @@ private:
     ofFbo colorSource;
     
     unsigned int nrDrumHits;
+    unsigned int nrKickHits; 
     unsigned int colorSwitchTrigger;
     
     Circle hringur;
     Triangle thrihorn;
     Square kassi;
     
+    enum drmVariables
+    {
+        kickSpeed = 0,
+        snareSpeed,
+        nrOfDrmVar
+    };
+    envelopeVariable drmVar[nrOfDrmVar];
     
     
 };

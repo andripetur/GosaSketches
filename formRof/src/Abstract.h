@@ -24,11 +24,13 @@ public:
     void draw();
     
     void setPreset(int nPreset);
+    string getCurrentPresetName();
     
 private:
     enum AbstractPresets
     {
-        AB_GRID_ONE = 0, AB_GRID_TWO,
+        AB_GRID_ONE = 0,
+        AB_GRID_TWO,
         TRIANGLES_ONE,
         TRIANGLES_TWO,
         SPHERE_MORPH_DOTS,

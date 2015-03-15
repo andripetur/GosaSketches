@@ -27,13 +27,13 @@ public:
     void exit();
 
     void keyPressed(int key);
-    void mousePressed(int x, int y, int button);
-    void windowResized(int w, int h);
 
 // Osc Stuff
     void oscDrTriggerCallBack(int which);
     void oscEnergyCallback(float dasEnergy);
     void oscBpmCallback(float dasBpm);
+    
+    float energy; 
     oscReceiverThread oscThread;
 
 // Kinect Stuff :
@@ -62,12 +62,12 @@ public:
     BloomPass::Ptr bloom;
     NoiseWarpPass::Ptr nWarp;
     RGBShiftPass::Ptr rgbShift;
-    PixelatePass::Ptr pixlate;
-    VerticalTiltShifPass::Ptr verTiltShift;
     
     void setupPostProccessing();
 
     bool bAlpha = false;
+    
+    unsigned int hhCount;
 
 //Envelopes
     enum pProcVariables
@@ -82,6 +82,8 @@ public:
     float nVal[NR_NVALUES];
 // Timer
     Timer sceneTimer;
-    void checkTimer(); 
+    void checkTimer();
+    
+    bool bShowInfo = false;
         		
 };
