@@ -11,7 +11,7 @@
 Triangle::Triangle()
 {
     setLocation(ofVec3f(ofGetWidth()*0.75, ofGetHeight()*0.5, 0));
-    setInitSize(INIT_SIZE);
+    setSize(SIZE);
     fillMesh();
     
 }

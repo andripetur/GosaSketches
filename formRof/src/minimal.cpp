@@ -8,10 +8,11 @@
 
 #include "minimal.h"
 
-Minimal::Minimal(int width, int height) {
+Minimal::Minimal(int width, int height, NoteLengths* nLengths) {
     
     //Allocate space for fbo
     colorSource.allocate(width, height);
+    this->nLengths = nLengths;
     
     hringur.randomDirection();
     kassi.randomDirection();
@@ -71,14 +72,13 @@ void Minimal::drumTriggers(int which)
             ++nrKickHits;
             break;
             
-        case SNARE:
-            
+        case SNARE:  
             drmVar[snareSpeed].trigger();
             kassi.randomDirection();
             break;
             
         case HH:
-            
+            thrihorn.flipRandomDirectionAxis();
             break;
             
         case PERC:

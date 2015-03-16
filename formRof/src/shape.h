@@ -11,7 +11,7 @@
 
 #include "ofMain.h"
 
-#define INIT_SIZE 100
+#define SIZE 100
 
 class Shape
 {
@@ -27,10 +27,10 @@ public:
     void update();
     void checkEdges();
     void randomDirection();
+    void flipRandomDirectionAxis();
     
     // Setters
     void setSize(float nSize);
-    void setInitSize(float nInitSize);
     void setLocation(ofVec3f nLocation);
     void setDirection(ofVec3f nDirection);
     void setSpeed(float speed);
@@ -47,7 +47,6 @@ public:
     int sizeMulti = 6;
 private:
     float size;
-    float initSize;
     
     bool rotateOn = true;
     float theta = 0;

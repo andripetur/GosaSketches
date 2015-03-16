@@ -10,6 +10,7 @@
 #include "envelopeVariable.h"
 #include "Timer.h"
 #include "WorldSpinner.h"
+#include "NoteLengths.h"
 
 enum drumTriggers {KICK = 0, SNARE, HH, PERC, COW};
 enum sceneNames {MINIMAL = 0, HUMANOID, ABSTRACT};
@@ -32,8 +33,9 @@ public:
     void oscDrTriggerCallBack(int which);
     void oscEnergyCallback(float dasEnergy);
     void oscBpmCallback(float dasBpm);
+    void oscMidiCallback(int which, float value);
     
-    float energy; 
+    float energy, roundedEnergy;
     oscReceiverThread oscThread;
 
 // Kinect Stuff :
@@ -53,6 +55,9 @@ public:
 // Cam stuff
     ofEasyCam cam;
     WorldSpinner wSpin;
+    
+    ofImage screen;
+    Timer checkBlackTimer;     
 
 // After effects.
     ofxPostProcessing post;
@@ -68,6 +73,7 @@ public:
     bool bAlpha = false;
     
     unsigned int hhCount;
+    unsigned int percCount;
 
 //Envelopes
     enum pProcVariables
@@ -75,15 +81,11 @@ public:
     envelopeVariable pProVar[NR_P_PROC_VAR];
     
 // NoteLengths
-    int currentBpm;
-    void calcNoteLengths();
+    NoteLengths nLengths;
     
-    enum noteLengths {_1n, _2n, _4n, _8n, _16n, _32n, NR_NVALUES};
-    float nVal[NR_NVALUES];
 // Timer
     Timer sceneTimer;
     void checkTimer();
     
     bool bShowInfo = false;
-        		
 };

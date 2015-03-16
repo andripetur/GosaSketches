@@ -13,7 +13,6 @@ oscReceiverThread::oscReceiverThread(ofApp* setOwner)
 {
     receiver.setup(PORT);
     owner = setOwner;
-    
 }
 
 void oscReceiverThread::threadedFunction()
@@ -39,6 +38,10 @@ void oscReceiverThread::threadedFunction()
             {
                 owner->oscDrTriggerCallBack(HH);
             }
+            else if (messageAdress == "/perc")
+            {
+                owner->oscDrTriggerCallBack(PERC);
+            }
             else if (messageAdress == "/cow")
             {
                 owner->oscDrTriggerCallBack(COW);
@@ -50,6 +53,10 @@ void oscReceiverThread::threadedFunction()
             else if (messageAdress == "/energy")
             {
                 owner->oscEnergyCallback(m.getArgAsFloat(0));
+            }
+            else if (messageAdress == "/midi")
+            {
+                owner->oscMidiCallback(m.getArgAsInt32(0), m.getArgAsFloat(1));
             }
 
         }

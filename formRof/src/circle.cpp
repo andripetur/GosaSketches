@@ -11,7 +11,7 @@ Circle::Circle()
 {
     setLocation( ofVec3f(ofGetWidth()/2, ofGetHeight()/2, 0 ) );
     
-    setInitSize(INIT_SIZE);
+    setSize(SIZE);
 }
 
 void Circle::drawTwoDim()

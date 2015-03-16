@@ -48,6 +48,29 @@ void Shape::randomDirection()
     direction = ofVec3f ( ofRandom(-2.,2), ofRandom(-2.,2), ofRandom(-2.,2));
 }
 
+void Shape::flipRandomDirectionAxis()
+{
+    float rn = ofRandom(1.f);
+    
+    if (rn > 0.3)
+    {
+        if (rn > 0.6)
+        {
+            direction.y *= -1;
+        }
+        else
+        {
+            direction.z *= -1;
+        }
+        
+    }
+    else // if smaller than 0.3
+    {
+        direction.x *= -1;
+    }
+    
+}
+
 // ------------------------ Setters
 void Shape::setLocation(ofVec3f nLocation)
 { location = nLocation; }
@@ -57,10 +80,6 @@ void Shape::setDirection(ofVec3f nDirection)
 
 void Shape::setSize(float nSize)
 { size = nSize; }
-
-void Shape::setInitSize(float nInitSize)
-{ initSize = nInitSize;
-  size = initSize; }
 
 void Shape::setColor(ofColor nColor )
 { color = nColor; }

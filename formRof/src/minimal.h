@@ -16,13 +16,14 @@
 #include "circle.h"
 #include "Triangle.h"
 #include "Square.h"
+#include "NoteLengths.h"
 
 class Minimal
 {
 
 public:
     Minimal() {}
-    Minimal(int width, int height);
+    Minimal(int width, int height,NoteLengths* nLengths);
     ~Minimal();
     
     // Functions
@@ -44,6 +45,7 @@ private:
     unsigned int nrDrumHits;
     unsigned int nrKickHits; 
     unsigned int colorSwitchTrigger;
+    NoteLengths* nLengths;
     
     Circle hringur;
     Triangle thrihorn;
