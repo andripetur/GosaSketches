@@ -72,6 +72,11 @@ void ofApp::setupPostProccessing()
     nWarp = post.createPass<NoiseWarpPass>();
     nWarp->setEnabled(true);
     
+    contrast = post.createPass<ContrastPass>();
+    contrast->setEnabled(true);
+    ctrast = brightness = 1.f;
+    alpha = 255;
+    
     // Initalize envelopes.
     pProVar[NOISE_AMP] = envelopeVariable(0.f, 0.04, 522.f);
     pProVar[N_AMP_MOD] = envelopeVariable(1, 1.5, 100.f);
@@ -123,6 +128,9 @@ void ofApp::update()
         rgbShift->setAmount( pProVar[RGB_SHIFT_AMT].getValue() * roundedEnergy*2);
         rgbShift->setAngle( pProVar[RGB_ANGLE].getValue() );
     }
+    
+    contrast->setBrightness(brightness);
+    contrast->setContrast(ctrast);
     
     // once a second check if screen is black
     if( checkBlackTimer.checkTimer() )
@@ -218,7 +226,7 @@ void ofApp::draw()
         // Map energy amount to alpha color. More intensity lower alpha.
         ofBackground(0, 0, 0, ((energy * -1.f) + 1.f) * 200  );
     } else {
-        ofBackground(0, 0, 0, 255);
+        ofBackground(0, 0, 0, alpha);
     }
     
     // Draw current scene
@@ -414,28 +422,31 @@ void ofApp::oscMidiCallback(int which, float value)
     switch (which)
     {
         case 0:
-
+        {   // Hipass mapped to brigthness
+            float v = ofMap(value, 0.f, 127.f, 1.f, 25.f);
+            brightness = v*v;
+        }
             break;
             
         case 1:
-            
+        {   // lowpass mapped to contrast
+            float v = ofMap(value, 0.f, 127.f, 5., 1.f);
+            ctrast = v * v;
+        }
             break;
             
         case 2:
-            
+            // reverb mapped to alpha
+            if ( value == 0) {
+                alpha = 255;
+            } else {
+                alpha = ofMap(value, 0., 127, 136.f, 77.f);
+            }
             break;
             
-        case 3:
-            
-            break;
-            
-        case 4:
-            
-            break;
-            
-        case 5:
-            
-            break;
+        case 3: break;
+        case 4: break;
+        case 5: break;
             
     } // switch
     
@@ -445,13 +456,11 @@ void ofApp::checkTimer()
 {
     if ( sceneTimer.checkTimer() )
     {
-        if ( currentScene == HUMANOID)
-        {
+        if ( currentScene == HUMANOID) {
             humanoid.changePreset();
         }
         
-        if ( currentScene == ABSTRACT )
-        {
+        if ( currentScene == ABSTRACT ) {
             abstract.changePreset();
         }
         
@@ -491,16 +500,13 @@ void ofApp::keyPressed(int key)
 			break;
             
             // Select Scenes
-        case '1':
-            currentScene = MINIMAL;
+        case '1': currentScene = MINIMAL;
             break;
         
-        case '2':
-            currentScene = HUMANOID;
+        case '2': currentScene = HUMANOID;
             break;
             
-        case '3':
-            currentScene = ABSTRACT;
+        case '3': currentScene = ABSTRACT;
             break;
             
             //Scroll Through Presets
@@ -536,12 +542,6 @@ void ofApp::keyPressed(int key)
         case 's':
         case 'S':
             wSpin.trigger();
-            break;
-            
-            //FakeDrumHit
-        case 'd':
-        case 'D':
-            minimal.drumTriggers(9);
             break;
             
         case 'i':

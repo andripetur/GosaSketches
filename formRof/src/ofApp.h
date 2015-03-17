@@ -67,10 +67,14 @@ public:
     BloomPass::Ptr bloom;
     NoiseWarpPass::Ptr nWarp;
     RGBShiftPass::Ptr rgbShift;
+    ContrastPass::Ptr contrast;
     
     void setupPostProccessing();
 
     bool bAlpha = false;
+    float alpha;
+    
+    float brightness, ctrast;
     
     unsigned int hhCount;
     unsigned int percCount;
