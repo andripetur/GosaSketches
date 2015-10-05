@@ -20,6 +20,7 @@ class MeshFunctions : public ofThread
 public: 
     MeshFunctions();
     
+    ofEasyCam* camPointer;
     ofMesh mesh,mesh2;
     ofxKinect *dasKinect;
     ofFbo * dasFbo;
@@ -39,6 +40,7 @@ public:
     void fillAbstractGrid(bool bWhichMethod);
     void fillAbstractForm(bool bSphereOrCone);
     void fillHumanDistortion();
+    void fillWorldToScreen(); 
     
     // Connect Functions
     void connectGrid();

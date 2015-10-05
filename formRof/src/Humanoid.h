@@ -19,7 +19,7 @@ class Humanoid : public MeshFunctions
 public:
     
     Humanoid() {}
-    Humanoid(ofxKinect *nKinect, ofFbo* nFbo);
+    Humanoid(ofxKinect *nKinect, ofFbo* nFbo, ofEasyCam* cam);
     ~Humanoid();
     
     void update();
@@ -38,6 +38,9 @@ private:
         LINES_ONE,
         LINES_TWO, BOXES,
         BOXES_TWO,
+//        DIZZY_POINTS,
+//        DIZZY_LINES,
+//        DIZZY_GRID,
         HUMANOID_NR_OF_PRES
     };
 

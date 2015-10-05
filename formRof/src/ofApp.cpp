@@ -2,17 +2,19 @@
 //------------------Constructor_and_setup__Initalize_Dat_SHit------------
 ofApp::ofApp() : oscThread(this) ,
                  minimal( ofGetWidth(), ofGetHeight(), &nLengths ) ,
-                 humanoid(&kinect, minimal.getColorSourceFboPointer() ) ,
+                 humanoid(&kinect, minimal.getColorSourceFboPointer(), &cam ) ,
                  abstract(&kinect, minimal.getColorSourceFboPointer() )
 {}
 
 void ofApp::setup()
 {
-    ofSetFrameRate(35);
+    ofSetFrameRate(30);
+    ofSetVerticalSync(false);
     setupKinect();
     
-    // start from minimal scene.
-    currentScene = MINIMAL;
+    // start from Humanoid scene.
+    currentScene = HUMANOID;
+    sceneChangerEnabled = true;
     energy = 0.01;
     roundedEnergy = 0.01;
     
@@ -38,9 +40,6 @@ void ofApp::setup()
 
 void ofApp::setupKinect()
 {
-    // enable depth->video image calibration
-    kinect.setRegistration(true);
-    
     // Initalise kinect - disable video image.
     kinect.init(false, false);
     
@@ -248,9 +247,9 @@ void ofApp::draw()
     post.end();
     
     // Draw minimalforms again ontop of pProcessing fbo for glitchy variations.
-    if (currentScene == MINIMAL && fmod(roundedEnergy, 0.2f) < 0.05) {
-        minimal.draw();
-    }
+//    if (currentScene == MINIMAL && fmod(roundedEnergy, 0.2f) < 0.05) {
+//        minimal.draw();
+//    }
     
     // set gl state back to original
     glPopAttrib();
@@ -290,6 +289,13 @@ void ofApp::draw()
         
         // bpm
         ofDrawBitmapString( ofToString(nLengths.getBpm()), ofPoint(100, ofGetHeight() - 20));
+        
+        // scene changer
+        if (sceneChangerEnabled) {
+            ofDrawBitmapString( "Scene changer enabled" , ofPoint(150, ofGetHeight() - 20));
+        } else {
+            ofDrawBitmapString( "Scene changer disabled", ofPoint(150, ofGetHeight() - 20));
+        }
     }
 }
 
@@ -374,17 +380,16 @@ void ofApp::oscEnergyCallback(float dasEnergy)
 {
     int lastScene = currentScene;
     
-    if (dasEnergy < 0.3 )
+    if (sceneChangerEnabled)
     {
-        currentScene = MINIMAL;
-    }
-    else if ( dasEnergy < 0.6)
-    {
-        currentScene = HUMANOID;
-    }
-    else
-    {
-        currentScene = ABSTRACT;  
+        if ( dasEnergy < 0.5)
+        {
+            currentScene = HUMANOID;
+        }
+        else
+        {
+            currentScene = ABSTRACT;  
+        }
     }
     
     // if time beetween scene switch and next preset change is shorter than
@@ -409,11 +414,12 @@ void ofApp::oscBpmCallback(float dasBpm )
     // if there's a new tempo edit envelope lengths.
     if (nLengths.getBpm() != dasBpm)
     {
-        pProVar[NOISE_AMP] = envelopeVariable(0.f, 0.04, nLengths.getValue(NoteLengths::_4n) );
-        pProVar[N_AMP_MOD] = envelopeVariable(1, 1.5, nLengths.getValue(NoteLengths::_16n) + nLengths.getValue(NoteLengths::_64n));
+        pProVar[NOISE_AMP].setDecayLength(nLengths.getValue(NoteLengths::_4n));
+        pProVar[N_AMP_MOD].setDecayLength(nLengths.getValue(NoteLengths::_16n) +
+                                          nLengths.getValue(NoteLengths::_64n) );
         
-        pProVar[RGB_SHIFT_AMT] = envelopeVariable(0.001f, 0.1, nLengths.getValue(NoteLengths::_2n));
-        pProVar[RGB_ANGLE] = envelopeVariable(0.001f, 0.1, nLengths.getValue(NoteLengths::_8n));
+        pProVar[RGB_SHIFT_AMT].setDecayLength( nLengths.getValue(NoteLengths::_2n));
+        pProVar[RGB_ANGLE].setDecayLength( nLengths.getValue(NoteLengths::_8n));
     }
 }
 
@@ -544,9 +550,16 @@ void ofApp::keyPressed(int key)
             wSpin.trigger();
             break;
             
+            // Toggle info
         case 'i':
         case 'I':
             bShowInfo = !bShowInfo; 
+            break;
+            
+            // Toggle scene changer.
+        case 'e':
+        case 'E':
+            sceneChangerEnabled = !sceneChangerEnabled;
             break;
             
             // Trigger a preset change

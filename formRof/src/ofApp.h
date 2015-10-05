@@ -51,6 +51,7 @@ public:
     Abstract abstract;
 
     int currentScene;
+    bool sceneChangerEnabled;
     
 // Cam stuff
     ofEasyCam cam;
@@ -81,7 +82,11 @@ public:
 
 //Envelopes
     enum pProcVariables
-    {NOISE_AMP = 0, N_AMP_MOD, RGB_SHIFT_AMT, RGB_ANGLE, TILT_SHIFT, NR_P_PROC_VAR};
+    {
+        NOISE_AMP = 0,  N_AMP_MOD,
+        RGB_SHIFT_AMT,  RGB_ANGLE,
+        TILT_SHIFT,     NR_P_PROC_VAR
+    };
     envelopeVariable pProVar[NR_P_PROC_VAR];
     
 // NoteLengths

@@ -254,6 +254,28 @@ void MeshFunctions::fillHumanDistortion()
 
 }
 
+void MeshFunctions::fillWorldToScreen(){
+    ofPoint cord;
+    int step = 10;
+    int curDist;
+    
+    // Go through depth image, add vertexes
+    for(int y = 0; y < dasKinect->getHeight(); y += step) {
+        for(int x = 0; x < dasKinect->getWidth(); x += step) {
+            
+            if((curDist = dasKinect->getDistanceAt(x, y)) > 0
+               //                   && curDist < 1250
+               )
+            {
+                cord = dasKinect->getWorldCoordinateAt(x, y);
+//                cord.x += ofSignedNoise(theta)+2;
+                mesh.addVertex( camPointer->worldToScreen( cord ));
+                mesh.addVertex( camPointer->worldToScreen( ofPoint(cord.z, cord.x, cord.y) ));
+            }
+        }
+    }
+}
+
 //-------------------------------- Connect Functions
 void MeshFunctions::connectGrid()
 {

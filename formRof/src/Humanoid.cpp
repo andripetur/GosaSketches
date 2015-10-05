@@ -8,12 +8,13 @@
 
 #include "Humanoid.h"
 
-Humanoid::Humanoid(ofxKinect *nKinect, ofFbo* nFbo)
+Humanoid::Humanoid(ofxKinect *nKinect, ofFbo* nFbo, ofEasyCam* cam)
 {
     lock();
     dasKinect = nKinect;
     dasFbo = nFbo;
     
+    camPointer = cam; 
     colorSource.allocate(dasFbo->getWidth(), dasFbo->getHeight(), OF_IMAGE_COLOR);
     
     unlock();
@@ -70,13 +71,23 @@ void Humanoid::update()
         case BOXES_TWO:
             fillGrid(15);
             break;
+            /*
+        case DIZZY_GRID:
+            fillWorldToScreen();
+            connectGrid();
+            break;
+            
+        case DIZZY_LINES:
+        case DIZZY_POINTS:
+            fillWorldToScreen();
+            break;
+             */
     }
     
 } // Update
 
 void Humanoid::draw()
 {
-    
     lock();
     
     dasFbo->readToPixels(colorSource);
@@ -85,15 +96,18 @@ void Humanoid::draw()
     switch ( getCurrentPreset() )
     {
         case PLAIN_POINTS:
+//        case DIZZY_POINTS:
             drawPoints();
             break;
         
         case GRID:
+//        case DIZZY_GRID:
             drawGrid();
             break;
             
         case LINES_ONE:
         case LINES_TWO:
+//        case DIZZY_LINES:
             drawLines();
             break;
             
@@ -106,10 +120,11 @@ void Humanoid::draw()
             drawGrowingHumanoid(true);
             break;
             
+            /*
         case GROW_LINES:
             drawGrowingHumanoid(false);
             break;
-            
+             */
     }
     unlock();
     
@@ -143,6 +158,14 @@ string Humanoid::getCurrentPresetName()
             return "BOXES";
         case BOXES_TWO:
             return "BOXES_TWO";
+            /*
+        case DIZZY_POINTS:
+            return "DIZZY_POINTS";
+        case DIZZY_LINES:
+            return "DIZZY_LINES";
+        case DIZZY_GRID:
+            return "DIZZY_GRID";
+             */
     }
 }
 

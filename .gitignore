@@ -10,3 +10,4 @@ build/
 *.xcconfig
 bin/
 *.xcuserstate
+*.zip
